@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 工具导航</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>AI 工具导航</h1>
+            <p class="subtitle">精选优质 AI 工具，提升工作效率</p>
+            
+            <!-- 用户操作区域 -->
+            <div class="user-actions">
+                <button id="loginBtn" class="auth-btn">登录</button>
+                <button id="registerBtn" class="auth-btn auth-btn-primary">注册</button>
+                <div id="userInfo" class="user-info hidden">
+                    <span id="userEmail" class="user-email"></span>
+                    <button id="logoutBtn" class="auth-btn auth-btn-secondary">登出</button>
+                </div>
+            </div>
+            
+            <!-- 搜索框 -->
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索 AI 工具...">
+            </div>
+        </div>
+    </header>
+
+    <!-- 分类导航 -->
+    <nav class="category-nav">
+        <a href="#chat" class="nav-item">💬 对话助手</a>
+        <a href="#image" class="nav-item">🎨 绘画</a>
+        <a href="#video" class="nav-item">🎬 视频</a>
+        <a href="#writing" class="nav-item">✍️ 写作</a>
+        <a href="#coding" class="nav-item">💻 编程</a>
+        <a href="#audio" class="nav-item">🎵 音频</a>
+    </nav>
+
+    <main class="container">
+        <!-- AI 对话助手 -->
+        <section class="category" id="chat" data-category="chat">
+            <h2 class="category-title">💬 AI 对话助手</h2>
+            <div class="tools-grid">
+                <a href="https://chat.openai.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="ChatGPT" data-desc="OpenAI 的对话式 AI 助手">
+                    <div class="tool-name">ChatGPT<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">OpenAI 的对话式 AI 助手</div>
+                </a>
+                <a href="https://claude.ai" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Claude" data-desc="Anthropic 的 AI 助手">
+                    <div class="tool-name">Claude<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">Anthropic 的 AI 助手</div>
+                </a>
+                <a href="https://gemini.google.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Gemini" data-desc="Google 的 AI 助手">
+                    <div class="tool-name">Gemini<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">Google 的 AI 助手</div>
+                </a>
+                <a href="https://www.perplexity.ai" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Perplexity" data-desc="AI 搜索引擎">
+                    <div class="tool-name">Perplexity<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">AI 搜索引擎</div>
+                </a>
+                <a href="https://tongyi.aliyun.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="通义千问" data-desc="阿里云的 AI 助手">
+                    <div class="tool-name">通义千问<span class="tag tag-free">免费</span><span class="tag tag-cn">中文</span></div>
+                    <div class="tool-desc">阿里云的 AI 助手</div>
+                </a>
+                <a href="https://yiyan.baidu.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="文心一言" data-desc="百度的 AI 助手">
+                    <div class="tool-name">文心一言<span class="tag tag-free">免费</span><span class="tag tag-cn">中文</span></div>
+                    <div class="tool-desc">百度的 AI 助手</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- AI 绘画 -->
+        <section class="category" id="image" data-category="image">
+            <h2 class="category-title">🎨 AI 绘画</h2>
+            <div class="tools-grid">
+                <a href="https://www.midjourney.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Midjourney" data-desc="高质量 AI 绘画工具">
+                    <div class="tool-name">Midjourney<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">高质量 AI 绘画工具</div>
+                </a>
+                <a href="https://www.stable-diffusion.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Stable Diffusion" data-desc="开源 AI 绘画模型">
+                    <div class="tool-name">Stable Diffusion<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">开源 AI 绘画模型</div>
+                </a>
+                <a href="https://www.adobe.com/products/firefly.html" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Adobe Firefly" data-desc="Adobe 的 AI 创意工具">
+                    <div class="tool-name">Adobe Firefly<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">Adobe 的 AI 创意工具</div>
+                </a>
+                <a href="https://www.canva.com/ai-image-generator/" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Canva AI" data-desc="Canva 的 AI 图像生成">
+                    <div class="tool-name">Canva AI<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">Canva 的 AI 图像生成</div>
+                </a>
+                <a href="https://tongyi.aliyun.com/wanxiang" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="通义万相" data-desc="阿里云 AI 绘画">
+                    <div class="tool-name">通义万相<span class="tag tag-free">免费</span><span class="tag tag-cn">中文</span></div>
+                    <div class="tool-desc">阿里云 AI 绘画</div>
+                </a>
+                <a href="https://yige.baidu.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="文心一格" data-desc="百度 AI 绘画">
+                    <div class="tool-name">文心一格<span class="tag tag-free">免费</span><span class="tag tag-cn">中文</span></div>
+                    <div class="tool-desc">百度 AI 绘画</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- AI 视频 -->
+        <section class="category" id="video" data-category="video">
+            <h2 class="category-title">🎬 AI 视频</h2>
+            <div class="tools-grid">
+                <a href="https://www.runway.ml" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Runway" data-desc="AI 视频编辑与生成">
+                    <div class="tool-name">Runway<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 视频编辑与生成</div>
+                </a>
+                <a href="https://www.synthesia.io" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Synthesia" data-desc="AI 虚拟人视频生成">
+                    <div class="tool-name">Synthesia<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 虚拟人视频生成</div>
+                </a>
+                <a href="https://www.heygen.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="HeyGen" data-desc="AI 数字人视频">
+                    <div class="tool-name">HeyGen<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 数字人视频</div>
+                </a>
+                <a href="https://www.d-id.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="D-ID" data-desc="AI 数字人生成">
+                    <div class="tool-name">D-ID<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 数字人生成</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- AI 写作 -->
+        <section class="category" id="writing" data-category="writing">
+            <h2 class="category-title">✍️ AI 写作</h2>
+            <div class="tools-grid">
+                <a href="https://www.notion.so/product/ai" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Notion AI" data-desc="Notion 的 AI 写作助手">
+                    <div class="tool-name">Notion AI<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">Notion 的 AI 写作助手</div>
+                </a>
+                <a href="https://www.jasper.ai" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Jasper" data-desc="AI 营销文案工具">
+                    <div class="tool-name">Jasper<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 营销文案工具</div>
+                </a>
+                <a href="https://www.copy.ai" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Copy.ai" data-desc="AI 文案生成工具">
+                    <div class="tool-name">Copy.ai<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">AI 文案生成工具</div>
+                </a>
+                <a href="https://www.grammarly.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Grammarly" data-desc="AI 写作辅助与语法检查">
+                    <div class="tool-name">Grammarly<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">AI 写作辅助与语法检查</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- AI 编程 -->
+        <section class="category" id="coding" data-category="coding">
+            <h2 class="category-title">💻 AI 编程</h2>
+            <div class="tools-grid">
+                <a href="https://github.com/features/copilot" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="GitHub Copilot" data-desc="AI 代码助手">
+                    <div class="tool-name">GitHub Copilot<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 代码助手</div>
+                </a>
+                <a href="https://cursor.sh" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Cursor" data-desc="AI 代码编辑器">
+                    <div class="tool-name">Cursor<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 代码编辑器</div>
+                </a>
+                <a href="https://www.tabnine.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Tabnine" data-desc="AI 代码补全工具">
+                    <div class="tool-name">Tabnine<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">AI 代码补全工具</div>
+                </a>
+                <a href="https://codeium.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Codeium" data-desc="免费 AI 编程助手">
+                    <div class="tool-name">Codeium<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">免费 AI 编程助手</div>
+                </a>
+            </div>
+        </section>
+
+        <!-- AI 音频 -->
+        <section class="category" id="audio" data-category="audio">
+            <h2 class="category-title">🎵 AI 音频</h2>
+            <div class="tools-grid">
+                <a href="https://elevenlabs.io" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="ElevenLabs" data-desc="AI 语音合成">
+                    <div class="tool-name">ElevenLabs<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 语音合成</div>
+                </a>
+                <a href="https://www.murf.ai" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Murf AI" data-desc="AI 配音工具">
+                    <div class="tool-name">Murf AI<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 配音工具</div>
+                </a>
+                <a href="https://www.descript.com" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Descript" data-desc="AI 音频编辑">
+                    <div class="tool-name">Descript<span class="tag tag-paid">付费</span></div>
+                    <div class="tool-desc">AI 音频编辑</div>
+                </a>
+                <a href="https://www.soundraw.io" class="tool-card" target="_blank" rel="noopener noreferrer" data-name="Soundraw" data-desc="AI 音乐生成">
+                    <div class="tool-name">Soundraw<span class="tag tag-free">免费</span></div>
+                    <div class="tool-desc">AI 音乐生成</div>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 AI 工具导航 | 持续更新中</p>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="backToTop" class="back-to-top" title="返回顶部">
+        ↑
+    </button>
+
+    <!-- 添加工具按钮 -->
+    <button id="addToolBtn" class="add-tool-btn" title="添加自定义工具">
+        +
+    </button>
+
+    <!-- 登录模态框 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>登录账号</h2>
+                <button class="modal-close" id="loginModalClose">&times;</button>
+            </div>
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">邮箱</label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="请输入邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码</label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="请输入密码" required>
+                </div>
+                <div id="loginError" class="error-message"></div>
+                <button type="submit" class="form-submit-btn">登录</button>
+                <div class="form-footer">
+                    <p>还没有账号？<a href="#" id="switchToRegister" class="form-link">立即注册</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 注册模态框 -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>注册账号</h2>
+                <button class="modal-close" id="registerModalClose">&times;</button>
+            </div>
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="registerEmail">邮箱</label>
+                    <input type="email" id="registerEmail" class="form-input" placeholder="请输入邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">密码</label>
+                    <input type="password" id="registerPassword" class="form-input" placeholder="至少 6 个字符" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="registerPasswordConfirm">确认密码</label>
+                    <input type="password" id="registerPasswordConfirm" class="form-input" placeholder="请再次输入密码" required minlength="6">
+                </div>
+                <div id="registerError" class="error-message"></div>
+                <button type="submit" class="form-submit-btn">注册</button>
+                <div class="form-footer">
+                    <p>已有账号？<a href="#" id="switchToLogin" class="form-link">立即登录</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 添加工具模态框 -->
+    <div id="addToolModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>添加自定义工具</h2>
+                <button class="modal-close" id="addToolModalClose">&times;</button>
+            </div>
+            <form id="addToolForm" class="auth-form">
+                <div class="form-group">
+                    <label for="toolName">工具名称</label>
+                    <input type="text" id="toolName" class="form-input" placeholder="请输入工具名称" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="toolUrl">工具网址</label>
+                    <input type="url" id="toolUrl" class="form-input" placeholder="https://example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="toolDesc">工具描述</label>
+                    <textarea id="toolDesc" class="form-input form-textarea" placeholder="请简要描述这个工具的功能" maxlength="200"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="toolCategory">工具分类</label>
+                    <select id="toolCategory" class="form-input form-select" required>
+                        <option value="">请选择分类</option>
+                        <option value="chat">💬 对话助手</option>
+                        <option value="image">🎨 绘画</option>
+                        <option value="video">🎬 视频</option>
+                        <option value="writing">✍️ 写作</option>
+                        <option value="coding">💻 编程</option>
+                        <option value="audio">🎵 音频</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-group-label">工具特性</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="toolIsFree" class="checkbox-input">
+                            <span class="checkbox-label">免费使用</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="toolIsChinese" class="checkbox-input">
+                            <span class="checkbox-label">支持中文</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="addToolError" class="error-message"></div>
+                <button type="submit" class="form-submit-btn">添加工具</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 编辑工具模态框 -->
+    <div id="editToolModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>编辑工具</h2>
+                <button class="modal-close" id="editToolModalClose">&times;</button>
+            </div>
+            <form id="editToolForm" class="auth-form">
+                <div class="form-group">
+                    <label for="editToolName">工具名称</label>
+                    <input type="text" id="editToolName" class="form-input" placeholder="请输入工具名称" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="editToolUrl">工具网址</label>
+                    <input type="url" id="editToolUrl" class="form-input" placeholder="https://example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="editToolDesc">工具描述</label>
+                    <textarea id="editToolDesc" class="form-input form-textarea" placeholder="请简要描述这个工具的功能" maxlength="200"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editToolCategory">工具分类</label>
+                    <select id="editToolCategory" class="form-input form-select" required>
+                        <option value="">请选择分类</option>
+                        <option value="chat">💬 对话助手</option>
+                        <option value="image">🎨 绘画</option>
+                        <option value="video">🎬 视频</option>
+                        <option value="writing">✍️ 写作</option>
+                        <option value="coding">💻 编程</option>
+                        <option value="audio">🎵 音频</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-group-label">工具特性</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="editToolIsFree" class="checkbox-input">
+                            <span class="checkbox-label">免费使用</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="editToolIsChinese" class="checkbox-input">
+                            <span class="checkbox-label">支持中文</span>
+                        </label>
+                    </div>
+                </div>
+                <div id="editToolError" class="error-message"></div>
+                <button type="submit" class="form-submit-btn">更新工具</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 删除工具确认模态框 -->
+    <div id="deleteToolModal" class="modal">
+        <div class="modal-content delete-modal">
+            <div class="modal-header">
+                <h2>确认删除</h2>
+                <button class="modal-close" id="deleteToolModalClose">&times;</button>
+            </div>
+            <div class="delete-modal-body">
+                <div class="delete-warning">
+                    <div class="warning-icon">⚠️</div>
+                    <p>您确定要删除工具 <strong id="deleteToolName"></strong> 吗？</p>
+                    <p class="warning-text">此操作无法撤销。</p>
+                </div>
+                <div class="delete-modal-actions">
+                    <button id="cancelDeleteBtn" class="btn btn-secondary">取消</button>
+                    <button id="confirmDeleteBtn" class="btn btn-danger">确认删除</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JavaScript SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- 应用脚本 -->
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

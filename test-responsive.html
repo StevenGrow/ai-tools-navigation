@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>响应式布局测试 - AI 工具导航</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 测试专用样式 */
+        .test-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            z-index: 10000;
+            font-size: 0.8rem;
+            max-width: 300px;
+        }
+        
+        .test-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .test-btn {
+            padding: 0.5rem;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .test-btn:hover {
+            background: #5b21b6;
+        }
+        
+        .test-info {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .test-results {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.7rem;
+        }
+        
+        .test-result {
+            padding: 0.3rem;
+            margin-bottom: 0.3rem;
+            border-radius: 3px;
+        }
+        
+        .test-pass {
+            background: rgba(16, 185, 129, 0.3);
+            border-left: 3px solid #10b981;
+        }
+        
+        .test-fail {
+            background: rgba(239, 68, 68, 0.3);
+            border-left: 3px solid #ef4444;
+        }
+        
+        .test-warning {
+            background: rgba(245, 158, 11, 0.3);
+            border-left: 3px solid #f59e0b;
+        }
+        
+        /* 测试模式指示器 */
+        .viewport-indicator {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            z-index: 9999;
+        }
+        
+        /* 测试高亮 */
+        .test-highlight {
+            outline: 2px dashed #6366f1 !important;
+            outline-offset: 2px;
+        }
+        
+        .test-error-highlight {
+            outline: 2px dashed #ef4444 !important;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 测试控制面板 -->
+    <div class="test-panel">
+        <h3>响应式测试面板</h3>
+        <div class="test-info">
+            <div>当前视口: <span id="currentViewport">未知</span></div>
+            <div>屏幕尺寸: <span id="screenSize">未知</span></div>
+            <div>设备像素比: <span id="devicePixelRatio">未知</span></div>
+        </div>
+        
+        <div class="test-controls">
+            <button class="test-btn" onclick="testDesktopLayout()">测试桌面端 (1200px)</button>
+            <button class="test-btn" onclick="testTabletLayout()">测试平板端 (768px)</button>
+            <button class="test-btn" onclick="testMobileLayout()">测试手机端 (375px)</button>
+            <button class="test-btn" onclick="runAllTests()">运行全部测试</button>
+            <button class="test-btn" onclick="clearResults()">清除结果</button>
+        </div>
+        
+        <div class="test-results" id="testResults">
+            <div class="test-result test-pass">测试结果将显示在这里...</div>
+        </div>
+    </div>
+    
+    <!-- 视口指示器 -->
+    <div class="viewport-indicator" id="viewportIndicator">
+        视口: 未知
+    </div>
+
+    <!-- 主要内容 - 复制自 index.html -->
+    <header>
+        <div class="header-content">
+            <h1>AI 工具导航</h1>
+            <p class="subtitle">精选优质 AI 工具，提升工作效率</p>
+            
+            <!-- 用户操作区域 -->
+            <div class="user-actions">
+                <button id="loginBtn" class="auth-btn">登录</button>
+                <button id="registerBtn" class="auth-btn auth-btn-primary">注册</button>
+                <div id="userInfo" class="user-info hidden">
+                    <span id="userEmail" class="user-email">test@example.com</span>
+                    <button id="logoutBtn" class="auth-btn auth-btn-secondary">登出</button>
+                </div>
+            </div>
+            
+            <!-- 搜索框 -->
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜索 AI 工具...">
+            </div>
+        </div>
+    </header>
+
+    <!-- 分类导航 -->
+    <nav class="category-nav">
+        <a href="#chat" class="nav-item">💬 对话助手</a>
+        <a href="#image" class="nav-item">🎨 绘画</a>
+        <a href="#video" class="nav-item">🎬 视频</a>
+        <a href="#writing" class="nav-item">✍️ 写作</a>
+        <a href="#coding" class="nav-item">💻 编程</a>
+        <a href="#audio" class="nav-item">🎵 音频</a>
+    </nav>
+
+    <main class="container">
+        <!-- AI 对话助手 -->
+        <section class="category" id="chat" data-category="chat">
+            <h2 class="category-title">💬 AI 对话助手</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-content">
+                        <div class="tool-name">ChatGPT<span class="tag tag-paid">付费</span></div>
+                        <div class="tool-desc">OpenAI 的对话式 AI 助手</div>
+                    </div>
+                </div>
+                <div class="tool-card custom-tool-card">
+                    <div class="tool-content">
+                        <div class="tool-name">自定义工具<span class="tag tag-free">免费</span><span class="tag tag-custom">自定义</span></div>
+                        <div class="tool-desc">用户添加的自定义 AI 工具</div>
+                    </div>
+                    <div class="tool-actions">
+                        <button class="tool-action-btn edit-tool-btn">编辑</button>
+                        <button class="tool-action-btn delete-tool-btn">删除</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI 绘画 -->
+        <section class="category" id="image" data-category="image">
+            <h2 class="category-title">🎨 AI 绘画</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-content">
+                        <div class="tool-name">Midjourney<span class="tag tag-paid">付费</span></div>
+                        <div class="tool-desc">高质量 AI 绘画工具</div>
+                    </div>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-content">
+                        <div class="tool-name">Stable Diffusion<span class="tag tag-free">免费</span></div>
+                        <div class="tool-desc">开源 AI 绘画模型</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 AI 工具导航 | 持续更新中</p>
+    </footer>
+
+    <!-- 返回顶部按钮 -->
+    <button id="backToTop" class="back-to-top show" title="返回顶部">↑</button>
+
+    <!-- 添加工具按钮 -->
+    <button id="addToolBtn" class="add-tool-btn show" title="添加自定义工具">+</button>
+
+    <!-- 测试模态框 -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>测试模态框</h2>
+                <button class="modal-close" onclick="closeTestModal()">&times;</button>
+            </div>
+            <form class="auth-form">
+                <div class="form-group">
+                    <label for="testEmail">邮箱</label>
+                    <input type="email" id="testEmail" class="form-input" placeholder="请输入邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label for="testPassword">密码</label>
+                    <input type="password" id="testPassword" class="form-input" placeholder="请输入密码" required>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-group-label">选项</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="checkbox-input">
+                            <span class="checkbox-label">选项 1</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="checkbox-input">
+                            <span class="checkbox-label">选项 2</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="form-submit-btn">提交</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 响应式测试脚本
+        class ResponsiveLayoutTester {
+            constructor() {
+                this.testResults = [];
+                this.currentTest = '';
+                this.init();
+            }
+
+            init() {
+                this.updateViewportInfo();
+                window.addEventListener('resize', () => this.updateViewportInfo());
+                
+                // 防止表单提交
+                document.querySelector('#testModal form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.logResult('表单提交测试', '表单提交被正确阻止', 'pass');
+                });
+            }
+
+            updateViewportInfo() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                const dpr = window.devicePixelRatio || 1;
+                
+                let viewport = 'Unknown';
+                if (width > 1024) viewport = 'Desktop';
+                else if (width > 768) viewport = 'Tablet';
+                else if (width > 480) viewport = 'Mobile Large';
+                else if (width > 320) viewport = 'Mobile Small';
+                else viewport = 'Mobile XS';
+
+                document.getElementById('currentViewport').textContent = viewport;
+                document.getElementById('screenSize').textContent = `${width} × ${height}`;
+                document.getElementById('devicePixelRatio').textContent = dpr;
+                document.getElementById('viewportIndicator').textContent = `视口: ${viewport} (${width}px)`;
+            }
+
+            logResult(test, message, type = 'pass') {
+                const result = { test, message, type, timestamp: new Date().toLocaleTimeString() };
+                this.testResults.push(result);
+                this.updateResultsDisplay();
+            }
+
+            updateResultsDisplay() {
+                const container = document.getElementById('testResults');
+                container.innerHTML = this.testResults.map(result => 
+                    `<div class="test-result test-${result.type}">
+                        <strong>[${result.timestamp}] ${result.test}:</strong><br>
+                        ${result.message}
+                    </div>`
+                ).join('');
+                container.scrollTop = container.scrollHeight;
+            }
+
+            // 测试桌面端布局
+            testDesktopLayout() {
+                this.currentTest = '桌面端布局测试';
+                this.logResult(this.currentTest, '开始测试桌面端布局 (>1024px)', 'pass');
+                
+                // 模拟桌面端视口
+                this.simulateViewport(1200, 800);
+                
+                setTimeout(() => {
+                    this.testHeaderLayout();
+                    this.testNavigationLayout();
+                    this.testGridLayout();
+                    this.testModalLayout();
+                    this.testButtonPositions();
+                    
+                    this.logResult(this.currentTest, '桌面端布局测试完成', 'pass');
+                }, 100);
+            }
+
+            // 测试平板端布局
+            testTabletLayout() {
+                this.currentTest = '平板端布局测试';
+                this.logResult(this.currentTest, '开始测试平板端布局 (768px)', 'pass');
+                
+                // 模拟平板端视口
+                this.simulateViewport(768, 1024);
+                
+                setTimeout(() => {
+                    this.testHeaderLayout();
+                    this.testNavigationLayout();
+                    this.testGridLayout();
+                    this.testModalLayout();
+                    this.testButtonPositions();
+                    this.testTouchInteractions();
+                    
+                    this.logResult(this.currentTest, '平板端布局测试完成', 'pass');
+                }, 100);
+            }
+
+            // 测试手机端布局
+            testMobileLayout() {
+                this.currentTest = '手机端布局测试';
+                this.logResult(this.currentTest, '开始测试手机端布局 (375px)', 'pass');
+                
+                // 模拟手机端视口
+                this.simulateViewport(375, 667);
+                
+                setTimeout(() => {
+                    this.testHeaderLayout();
+                    this.testNavigationLayout();
+                    this.testGridLayout();
+                    this.testModalLayout();
+                    this.testButtonPositions();
+                    this.testTouchInteractions();
+                    this.testMobileSpecificFeatures();
+                    
+                    this.logResult(this.currentTest, '手机端布局测试完成', 'pass');
+                }, 100);
+            }
+
+            // 模拟不同视口尺寸
+            simulateViewport(width, height) {
+                // 注意：这只是视觉上的模拟，实际的媒体查询仍基于真实视口
+                document.body.style.width = width + 'px';
+                document.body.style.maxWidth = width + 'px';
+                document.body.style.margin = '0 auto';
+                document.body.style.border = '2px solid #6366f1';
+                
+                // 触发 resize 事件
+                window.dispatchEvent(new Event('resize'));
+                
+                this.logResult(this.currentTest, `视口设置为 ${width} × ${height}`, 'pass');
+            }
+
+            // 测试头部布局
+            testHeaderLayout() {
+                const header = document.querySelector('header');
+                const userActions = document.querySelector('.user-actions');
+                const searchContainer = document.querySelector('.search-container');
+                
+                if (!header) {
+                    this.logResult(this.currentTest, '头部元素未找到', 'fail');
+                    return;
+                }
+
+                // 检查头部是否可见
+                const headerRect = header.getBoundingClientRect();
+                if (headerRect.height > 0) {
+                    this.logResult(this.currentTest, `头部高度: ${Math.round(headerRect.height)}px`, 'pass');
+                } else {
+                    this.logResult(this.currentTest, '头部高度为 0', 'fail');
+                }
+
+                // 检查用户操作区域
+                if (userActions) {
+                    const actionsRect = userActions.getBoundingClientRect();
+                    const isVisible = actionsRect.width > 0 && actionsRect.height > 0;
+                    this.logResult(this.currentTest, `用户操作区域可见: ${isVisible}`, isVisible ? 'pass' : 'fail');
+                }
+
+                // 检查搜索框
+                if (searchContainer) {
+                    const searchRect = searchContainer.getBoundingClientRect();
+                    const searchInput = searchContainer.querySelector('.search-input');
+                    if (searchInput) {
+                        const inputRect = searchInput.getBoundingClientRect();
+                        this.logResult(this.currentTest, `搜索框宽度: ${Math.round(inputRect.width)}px`, 'pass');
+                    }
+                }
+            }
+
+            // 测试导航布局
+            testNavigationLayout() {
+                const nav = document.querySelector('.category-nav');
+                if (!nav) {
+                    this.logResult(this.currentTest, '导航元素未找到', 'fail');
+                    return;
+                }
+
+                const navItems = nav.querySelectorAll('.nav-item');
+                const navRect = nav.getBoundingClientRect();
+                
+                this.logResult(this.currentTest, `导航项数量: ${navItems.length}`, 'pass');
+                this.logResult(this.currentTest, `导航高度: ${Math.round(navRect.height)}px`, 'pass');
+
+                // 检查导航项是否换行
+                let previousTop = null;
+                let lineCount = 0;
+                navItems.forEach((item, index) => {
+                    const itemRect = item.getBoundingClientRect();
+                    if (previousTop === null || Math.abs(itemRect.top - previousTop) > 5) {
+                        lineCount++;
+                        previousTop = itemRect.top;
+                    }
+                });
+                
+                this.logResult(this.currentTest, `导航行数: ${lineCount}`, lineCount <= 2 ? 'pass' : 'warning');
+            }
+
+            // 测试网格布局
+            testGridLayout() {
+                const container = document.querySelector('.container');
+                const categories = document.querySelectorAll('.category');
+                const toolsGrids = document.querySelectorAll('.tools-grid');
+                
+                if (!container) {
+                    this.logResult(this.currentTest, '容器元素未找到', 'fail');
+                    return;
+                }
+
+                const containerRect = container.getBoundingClientRect();
+                this.logResult(this.currentTest, `容器宽度: ${Math.round(containerRect.width)}px`, 'pass');
+
+                // 检查分类布局
+                if (categories.length > 0) {
+                    const firstCategory = categories[0];
+                    const secondCategory = categories[1];
+                    
+                    if (firstCategory && secondCategory) {
+                        const firstRect = firstCategory.getBoundingClientRect();
+                        const secondRect = secondCategory.getBoundingClientRect();
+                        
+                        // 检查是否并排显示（桌面端）或垂直堆叠（移动端）
+                        const isSideBySide = Math.abs(firstRect.top - secondRect.top) < 50;
+                        const isStacked = Math.abs(firstRect.top - secondRect.top) > 50;
+                        
+                        if (window.innerWidth > 1024 && isSideBySide) {
+                            this.logResult(this.currentTest, '桌面端分类并排显示正确', 'pass');
+                        } else if (window.innerWidth <= 1024 && isStacked) {
+                            this.logResult(this.currentTest, '移动端分类垂直堆叠正确', 'pass');
+                        } else {
+                            this.logResult(this.currentTest, '分类布局可能有问题', 'warning');
+                        }
+                    }
+                }
+
+                // 检查工具网格
+                toolsGrids.forEach((grid, index) => {
+                    const toolCards = grid.querySelectorAll('.tool-card');
+                    if (toolCards.length > 0) {
+                        const gridRect = grid.getBoundingClientRect();
+                        this.logResult(this.currentTest, `网格 ${index + 1} 工具卡片数量: ${toolCards.length}`, 'pass');
+                        
+                        // 检查工具卡片布局
+                        this.checkToolCardLayout(toolCards, index + 1);
+                    }
+                });
+            }
+
+            // 检查工具卡片布局
+            checkToolCardLayout(toolCards, gridIndex) {
+                if (toolCards.length < 2) return;
+
+                const firstCard = toolCards[0];
+                const secondCard = toolCards[1];
+                const firstRect = firstCard.getBoundingClientRect();
+                const secondRect = secondCard.getBoundingClientRect();
+
+                // 检查卡片是否并排或垂直堆叠
+                const isSideBySide = Math.abs(firstRect.top - secondRect.top) < 50;
+                const isStacked = Math.abs(firstRect.top - secondRect.top) > 50;
+
+                if (window.innerWidth > 480 && isSideBySide) {
+                    this.logResult(this.currentTest, `网格 ${gridIndex} 工具卡片并排显示`, 'pass');
+                } else if (window.innerWidth <= 480 && isStacked) {
+                    this.logResult(this.currentTest, `网格 ${gridIndex} 工具卡片垂直堆叠`, 'pass');
+                } else {
+                    this.logResult(this.currentTest, `网格 ${gridIndex} 工具卡片布局检查`, 'warning');
+                }
+
+                // 检查卡片尺寸
+                toolCards.forEach((card, index) => {
+                    const rect = card.getBoundingClientRect();
+                    if (rect.width < 200) {
+                        this.logResult(this.currentTest, `卡片 ${index + 1} 宽度较小: ${Math.round(rect.width)}px`, 'warning');
+                    }
+                    if (rect.height < 80) {
+                        this.logResult(this.currentTest, `卡片 ${index + 1} 高度较小: ${Math.round(rect.height)}px`, 'warning');
+                    }
+                });
+            }
+
+            // 测试模态框布局
+            testModalLayout() {
+                const modal = document.getElementById('testModal');
+                if (!modal) {
+                    this.logResult(this.currentTest, '测试模态框未找到', 'fail');
+                    return;
+                }
+
+                // 显示模态框
+                modal.classList.add('show');
+                
+                setTimeout(() => {
+                    const modalContent = modal.querySelector('.modal-content');
+                    if (modalContent) {
+                        const contentRect = modalContent.getBoundingClientRect();
+                        const viewportWidth = window.innerWidth;
+                        const viewportHeight = window.innerHeight;
+                        
+                        // 检查模态框是否在视口内
+                        const isInViewport = contentRect.left >= 0 && 
+                                           contentRect.right <= viewportWidth && 
+                                           contentRect.top >= 0 && 
+                                           contentRect.bottom <= viewportHeight;
+                        
+                        this.logResult(this.currentTest, `模态框在视口内: ${isInViewport}`, isInViewport ? 'pass' : 'warning');
+                        this.logResult(this.currentTest, `模态框尺寸: ${Math.round(contentRect.width)} × ${Math.round(contentRect.height)}`, 'pass');
+                        
+                        // 检查表单元素
+                        this.testFormElements(modalContent);
+                    }
+                    
+                    // 隐藏模态框
+                    modal.classList.remove('show');
+                }, 200);
+            }
+
+            // 测试表单元素
+            testFormElements(container) {
+                const inputs = container.querySelectorAll('.form-input');
+                const buttons = container.querySelectorAll('.form-submit-btn');
+                const checkboxes = container.querySelectorAll('.checkbox-input');
+
+                inputs.forEach((input, index) => {
+                    const rect = input.getBoundingClientRect();
+                    const minTouchSize = 44; // 推荐的最小触摸尺寸
+                    
+                    if (rect.height >= minTouchSize) {
+                        this.logResult(this.currentTest, `输入框 ${index + 1} 触摸友好 (${Math.round(rect.height)}px)`, 'pass');
+                    } else {
+                        this.logResult(this.currentTest, `输入框 ${index + 1} 高度不足 (${Math.round(rect.height)}px)`, 'warning');
+                    }
+                });
+
+                buttons.forEach((button, index) => {
+                    const rect = button.getBoundingClientRect();
+                    const minTouchSize = 44;
+                    
+                    if (rect.height >= minTouchSize) {
+                        this.logResult(this.currentTest, `按钮 ${index + 1} 触摸友好 (${Math.round(rect.height)}px)`, 'pass');
+                    } else {
+                        this.logResult(this.currentTest, `按钮 ${index + 1} 高度不足 (${Math.round(rect.height)}px)`, 'warning');
+                    }
+                });
+
+                checkboxes.forEach((checkbox, index) => {
+                    const rect = checkbox.getBoundingClientRect();
+                    if (rect.width >= 18 && rect.height >= 18) {
+                        this.logResult(this.currentTest, `复选框 ${index + 1} 尺寸合适`, 'pass');
+                    } else {
+                        this.logResult(this.currentTest, `复选框 ${index + 1} 尺寸过小`, 'warning');
+                    }
+                });
+            }
+
+            // 测试按钮位置
+            testButtonPositions() {
+                const backToTop = document.getElementById('backToTop');
+                const addToolBtn = document.getElementById('addToolBtn');
+
+                if (backToTop) {
+                    const rect = backToTop.getBoundingClientRect();
+                    const isVisible = rect.width > 0 && rect.height > 0;
+                    this.logResult(this.currentTest, `返回顶部按钮可见: ${isVisible}`, 'pass');
+                    
+                    if (isVisible) {
+                        const isInBottomRight = rect.right > window.innerWidth - 100 && 
+                                              rect.bottom > window.innerHeight - 100;
+                        this.logResult(this.currentTest, `返回顶部按钮位置正确: ${isInBottomRight}`, isInBottomRight ? 'pass' : 'warning');
+                    }
+                }
+
+                if (addToolBtn) {
+                    const rect = addToolBtn.getBoundingClientRect();
+                    const isVisible = rect.width > 0 && rect.height > 0;
+                    this.logResult(this.currentTest, `添加工具按钮可见: ${isVisible}`, 'pass');
+                }
+            }
+
+            // 测试触摸交互
+            testTouchInteractions() {
+                const toolActions = document.querySelectorAll('.tool-actions');
+                
+                toolActions.forEach((actions, index) => {
+                    const rect = actions.getBoundingClientRect();
+                    const isVisible = window.getComputedStyle(actions).opacity !== '0';
+                    
+                    if (window.innerWidth <= 768) {
+                        // 在移动端，工具操作应该始终可见
+                        this.logResult(this.currentTest, `工具操作 ${index + 1} 在移动端可见: ${isVisible}`, isVisible ? 'pass' : 'warning');
+                    }
+                });
+
+                // 检查操作按钮尺寸
+                const actionButtons = document.querySelectorAll('.tool-action-btn');
+                actionButtons.forEach((button, index) => {
+                    const rect = button.getBoundingClientRect();
+                    const minTouchSize = 44;
+                    
+                    if (rect.width >= minTouchSize && rect.height >= minTouchSize) {
+                        this.logResult(this.currentTest, `操作按钮 ${index + 1} 触摸友好`, 'pass');
+                    } else {
+                        this.logResult(this.currentTest, `操作按钮 ${index + 1} 尺寸不足 (${Math.round(rect.width)}×${Math.round(rect.height)})`, 'warning');
+                    }
+                });
+            }
+
+            // 测试移动端特定功能
+            testMobileSpecificFeatures() {
+                // 检查视口元标签
+                const viewportMeta = document.querySelector('meta[name="viewport"]');
+                if (viewportMeta) {
+                    const content = viewportMeta.getAttribute('content');
+                    const hasCorrectViewport = content.includes('width=device-width') && content.includes('initial-scale=1.0');
+                    this.logResult(this.currentTest, `视口元标签配置正确: ${hasCorrectViewport}`, hasCorrectViewport ? 'pass' : 'fail');
+                } else {
+                    this.logResult(this.currentTest, '缺少视口元标签', 'fail');
+                }
+
+                // 检查字体大小
+                const body = document.body;
+                const computedStyle = window.getComputedStyle(body);
+                const fontSize = parseFloat(computedStyle.fontSize);
+                
+                if (fontSize >= 14) {
+                    this.logResult(this.currentTest, `基础字体大小合适: ${fontSize}px`, 'pass');
+                } else {
+                    this.logResult(this.currentTest, `基础字体大小过小: ${fontSize}px`, 'warning');
+                }
+
+                // 检查水平滚动
+                const hasHorizontalScroll = document.body.scrollWidth > window.innerWidth;
+                this.logResult(this.currentTest, `无水平滚动: ${!hasHorizontalScroll}`, !hasHorizontalScroll ? 'pass' : 'warning');
+            }
+
+            // 运行所有测试
+            runAllTests() {
+                this.clearResults();
+                this.logResult('全面测试', '开始运行所有响应式测试', 'pass');
+                
+                // 依次测试不同尺寸
+                this.testDesktopLayout();
+                
+                setTimeout(() => {
+                    this.testTabletLayout();
+                }, 1000);
+                
+                setTimeout(() => {
+                    this.testMobileLayout();
+                }, 2000);
+                
+                setTimeout(() => {
+                    // 恢复原始视口
+                    document.body.style.width = '';
+                    document.body.style.maxWidth = '';
+                    document.body.style.margin = '';
+                    document.body.style.border = '';
+                    window.dispatchEvent(new Event('resize'));
+                    
+                    this.logResult('全面测试', '所有响应式测试完成', 'pass');
+                    this.generateTestSummary();
+                }, 3000);
+            }
+
+            // 生成测试摘要
+            generateTestSummary() {
+                const totalTests = this.testResults.length;
+                const passedTests = this.testResults.filter(r => r.type === 'pass').length;
+                const failedTests = this.testResults.filter(r => r.type === 'fail').length;
+                const warningTests = this.testResults.filter(r => r.type === 'warning').length;
+                
+                this.logResult('测试摘要', 
+                    `总计: ${totalTests} | 通过: ${passedTests} | 失败: ${failedTests} | 警告: ${warningTests}`, 
+                    failedTests === 0 ? 'pass' : 'warning'
+                );
+            }
+
+            // 清除测试结果
+            clearResults() {
+                this.testResults = [];
+                this.updateResultsDisplay();
+            }
+        }
+
+        // 初始化测试器
+        const tester = new ResponsiveLayoutTester();
+
+        // 全局函数
+        function testDesktopLayout() {
+            tester.testDesktopLayout();
+        }
+
+        function testTabletLayout() {
+            tester.testTabletLayout();
+        }
+
+        function testMobileLayout() {
+            tester.testMobileLayout();
+        }
+
+        function runAllTests() {
+            tester.runAllTests();
+        }
+
+        function clearResults() {
+            tester.clearResults();
+        }
+
+        function closeTestModal() {
+            document.getElementById('testModal').classList.remove('show');
+        }
+
+        // 自动开始测试
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                tester.logResult('初始化', '响应式测试器已准备就绪', 'pass');
+                tester.logResult('提示', '点击按钮开始测试不同设备的布局', 'pass');
+            }, 500);
+        });
+    </script>
+</body>
+</html>

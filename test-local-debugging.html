@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地测试和调试 - AI 工具导航</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 测试页面专用样式 */
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            background: white;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        
+        .test-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .test-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .test-btn.primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .test-btn.success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .test-btn.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .test-btn.danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .test-btn.info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .test-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .test-status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .test-status.loading {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .test-status.success {
+            background: #e8f5e8;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .test-status.error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        
+        .test-status.info {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+        }
+        
+        .console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .shortcuts-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #6c757d;
+        }
+        
+        .shortcuts-info h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .shortcuts-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .shortcuts-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .shortcut-key {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff, #28a745);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .test-results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .result-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background: white;
+            border: 2px solid #e9ecef;
+        }
+        
+        .result-card.success {
+            border-color: #28a745;
+            background: #f8fff8;
+        }
+        
+        .result-card.warning {
+            border-color: #ffc107;
+            background: #fffef8;
+        }
+        
+        .result-card.error {
+            border-color: #dc3545;
+            background: #fff8f8;
+        }
+        
+        .result-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .result-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+        }
+        
+        @media (max-width: 768px) {
+            .test-container {
+                padding: 10px;
+            }
+            
+            .test-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .shortcuts-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="test-header">
+            <h1>🧪 本地测试和调试</h1>
+            <p>AI 工具导航网站功能测试套件</p>
+            <div id="testProgress" class="progress-bar" style="display: none;">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- 测试状态显示 -->
+        <div id="testStatus" class="test-status info" style="display: none;">
+            准备开始测试...
+        </div>
+
+        <!-- 主要测试功能 -->
+        <div class="test-section">
+            <h3>🚀 主要测试功能</h3>
+            <div class="test-buttons">
+                <button id="runAllTestsBtn" class="test-btn primary">
+                    🧪 运行所有测试
+                </button>
+                <button id="showHelpBtn" class="test-btn info">
+                    ❓ 显示帮助
+                </button>
+                <button id="clearConsoleBtn" class="test-btn warning">
+                    🧹 清空控制台
+                </button>
+                <button id="openConsoleBtn" class="test-btn info">
+                    🔍 打开开发者控制台
+                </button>
+            </div>
+        </div>
+
+        <!-- 单项测试功能 -->
+        <div class="test-section">
+            <h3>🔧 单项测试功能</h3>
+            <div class="test-buttons">
+                <button id="runAuthTestsBtn" class="test-btn success">
+                    🔐 认证功能测试
+                </button>
+                <button id="runToolTestsBtn" class="test-btn success">
+                    🛠️ 工具管理测试
+                </button>
+                <button id="runSearchTestsBtn" class="test-btn success">
+                    🔍 搜索功能测试
+                </button>
+                <button id="runErrorTestsBtn" class="test-btn success">
+                    ⚠️ 错误处理测试
+                </button>
+            </div>
+        </div>
+
+        <!-- 测试结果摘要 -->
+        <div id="testResultsSection" class="test-section" style="display: none;">
+            <h3>📊 测试结果摘要</h3>
+            <div id="testResultsSummary" class="test-results-summary">
+                <!-- 动态生成测试结果卡片 -->
+            </div>
+        </div>
+
+        <!-- 快捷键信息 -->
+        <div class="test-section">
+            <div class="shortcuts-info">
+                <h4>⌨️ 快捷键</h4>
+                <ul class="shortcuts-list">
+                    <li>
+                        <span>运行所有测试</span>
+                        <span class="shortcut-key">Ctrl/Cmd + Shift + R</span>
+                    </li>
+                    <li>
+                        <span>认证功能测试</span>
+                        <span class="shortcut-key">Ctrl/Cmd + Shift + A</span>
+                    </li>
+                    <li>
+                        <span>工具管理测试</span>
+                        <span class="shortcut-key">Ctrl/Cmd + Shift + T</span>
+                    </li>
+                    <li>
+                        <span>搜索功能测试</span>
+                        <span class="shortcut-key">Ctrl/Cmd + Shift + S</span>
+                    </li>
+                    <li>
+                        <span>错误处理测试</span>
+                        <span class="shortcut-key">Ctrl/Cmd + Shift + E</span>
+                    </li>
+                    <li>
+                        <span>显示帮助</span>
+                        <span class="shortcut-key">Ctrl/Cmd + Shift + H</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 控制台输出 -->
+        <div class="test-section">
+            <h3>📋 控制台输出</h3>
+            <div id="consoleOutput" class="console-output">
+                控制台输出将显示在这里...
+                
+使用方法：
+1. 点击上方按钮运行测试
+2. 或使用快捷键快速执行
+3. 查看测试结果和详细日志
+4. 打开浏览器开发者控制台查看更多信息
+
+注意事项：
+• 某些测试需要用户登录状态
+• 测试会创建临时数据，完成后会自动清理
+• 建议在测试环境中运行
+            </div>
+        </div>
+    </div>
+
+    <!-- 加载必要的脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+    
+    <!-- 加载测试脚本 -->
+    <script src="test-auth-functionality.js"></script>
+    <script src="test-tool-management.js"></script>
+    <script src="test-search-functionality.js"></script>
+    <script src="test-error-handling.js"></script>
+    <script src="test-runner.js"></script>
+
+    <script>
+        // 测试页面控制脚本
+        class TestPageController {
+            constructor() {
+                this.consoleOutput = document.getElementById('consoleOutput');
+                this.testStatus = document.getElementById('testStatus');
+                this.testProgress = document.getElementById('testProgress');
+                this.progressFill = document.getElementById('progressFill');
+                this.testResultsSection = document.getElementById('testResultsSection');
+                this.testResultsSummary = document.getElementById('testResultsSummary');
+                
+                this.originalConsoleLog = console.log;
+                this.originalConsoleError = console.error;
+                this.originalConsoleWarn = console.warn;
+                
+                this.setupConsoleCapture();
+                this.setupEventListeners();
+                this.initializePage();
+            }
+
+            setupConsoleCapture() {
+                const self = this;
+                
+                console.log = function(...args) {
+                    self.originalConsoleLog.apply(console, args);
+                    self.appendToConsole('log', args.join(' '));
+                };
+                
+                console.error = function(...args) {
+                    self.originalConsoleError.apply(console, args);
+                    self.appendToConsole('error', args.join(' '));
+                };
+                
+                console.warn = function(...args) {
+                    self.originalConsoleWarn.apply(console, args);
+                    self.appendToConsole('warn', args.join(' '));
+                };
+            }
+
+            appendToConsole(type, message) {
+                const timestamp = new Date().toLocaleTimeString();
+                const prefix = {
+                    'log': '📝',
+                    'error': '❌',
+                    'warn': '⚠️'
+                }[type] || '📝';
+                
+                const formattedMessage = `[${timestamp}] ${prefix} ${message}\n`;
+                this.consoleOutput.textContent += formattedMessage;
+                this.consoleOutput.scrollTop = this.consoleOutput.scrollHeight;
+            }
+
+            setupEventListeners() {
+                // 主要测试按钮
+                document.getElementById('runAllTestsBtn').addEventListener('click', () => {
+                    this.runAllTests();
+                });
+                
+                document.getElementById('showHelpBtn').addEventListener('click', () => {
+                    this.showHelp();
+                });
+                
+                document.getElementById('clearConsoleBtn').addEventListener('click', () => {
+                    this.clearConsole();
+                });
+                
+                document.getElementById('openConsoleBtn').addEventListener('click', () => {
+                    this.openDevConsole();
+                });
+                
+                // 单项测试按钮
+                document.getElementById('runAuthTestsBtn').addEventListener('click', () => {
+                    this.runSingleTest('auth');
+                });
+                
+                document.getElementById('runToolTestsBtn').addEventListener('click', () => {
+                    this.runSingleTest('tool');
+                });
+                
+                document.getElementById('runSearchTestsBtn').addEventListener('click', () => {
+                    this.runSingleTest('search');
+                });
+                
+                document.getElementById('runErrorTestsBtn').addEventListener('click', () => {
+                    this.runSingleTest('error');
+                });
+            }
+
+            async initializePage() {
+                this.showStatus('info', '正在初始化测试环境...');
+                
+                // 等待应用初始化
+                if (window.app) {
+                    try {
+                        await window.app.init();
+                        this.showStatus('success', '✅ 测试环境初始化完成，可以开始测试');
+                    } catch (error) {
+                        this.showStatus('error', `❌ 应用初始化失败: ${error.message}`);
+                    }
+                } else {
+                    this.showStatus('info', 'ℹ️ 等待应用加载...');
+                    
+                    // 等待应用加载
+                    const checkApp = setInterval(() => {
+                        if (window.app) {
+                            clearInterval(checkApp);
+                            window.app.init().then(() => {
+                                this.showStatus('success', '✅ 测试环境初始化完成，可以开始测试');
+                            }).catch(error => {
+                                this.showStatus('error', `❌ 应用初始化失败: ${error.message}`);
+                            });
+                        }
+                    }, 1000);
+                }
+            }
+
+            showStatus(type, message) {
+                this.testStatus.className = `test-status ${type}`;
+                this.testStatus.textContent = message;
+                this.testStatus.style.display = 'block';
+            }
+
+            showProgress(percentage) {
+                this.testProgress.style.display = 'block';
+                this.progressFill.style.width = `${percentage}%`;
+            }
+
+            hideProgress() {
+                this.testProgress.style.display = 'none';
+                this.progressFill.style.width = '0%';
+            }
+
+            async runAllTests() {
+                this.showStatus('loading', '🧪 正在运行所有测试...');
+                this.showProgress(0);
+                this.disableButtons(true);
+                
+                try {
+                    if (window.runAllTests) {
+                        // 模拟进度更新
+                        const progressInterval = setInterval(() => {
+                            const currentWidth = parseInt(this.progressFill.style.width) || 0;
+                            if (currentWidth < 90) {
+                                this.showProgress(currentWidth + 10);
+                            }
+                        }, 2000);
+                        
+                        const result = await window.runAllTests();
+                        
+                        clearInterval(progressInterval);
+                        this.showProgress(100);
+                        
+                        setTimeout(() => {
+                            this.hideProgress();
+                            this.showTestResults(result);
+                            this.showStatus('success', '✅ 所有测试完成，请查看结果摘要');
+                        }, 1000);
+                        
+                    } else {
+                        throw new Error('测试运行器未加载');
+                    }
+                } catch (error) {
+                    this.hideProgress();
+                    this.showStatus('error', `❌ 测试执行失败: ${error.message}`);
+                } finally {
+                    this.disableButtons(false);
+                }
+            }
+
+            async runSingleTest(type) {
+                const testNames = {
+                    'auth': '认证功能',
+                    'tool': '工具管理',
+                    'search': '搜索功能',
+                    'error': '错误处理'
+                };
+                
+                const testFunctions = {
+                    'auth': window.runAuthTests,
+                    'tool': window.runToolManagementTests,
+                    'search': window.runSearchTests,
+                    'error': window.runErrorHandlingTests
+                };
+                
+                this.showStatus('loading', `🧪 正在运行${testNames[type]}测试...`);
+                this.disableButtons(true);
+                
+                try {
+                    const testFunction = testFunctions[type];
+                    if (testFunction) {
+                        const result = await testFunction();
+                        this.showStatus('success', `✅ ${testNames[type]}测试完成`);
+                        
+                        // 显示单项测试结果
+                        if (result) {
+                            this.showSingleTestResult(testNames[type], result);
+                        }
+                    } else {
+                        throw new Error(`${testNames[type]}测试函数未加载`);
+                    }
+                } catch (error) {
+                    this.showStatus('error', `❌ ${testNames[type]}测试失败: ${error.message}`);
+                } finally {
+                    this.disableButtons(false);
+                }
+            }
+
+            showTestResults(results) {
+                if (!results || !window.testRunner || !window.testRunner.testResults) {
+                    return;
+                }
+                
+                const testResults = window.testRunner.testResults;
+                this.testResultsSection.style.display = 'block';
+                
+                // 清空现有结果
+                this.testResultsSummary.innerHTML = '';
+                
+                // 创建结果卡片
+                const modules = [
+                    { key: 'authentication', name: '认证功能' },
+                    { key: 'toolManagement', name: '工具管理' },
+                    { key: 'search', name: '搜索功能' },
+                    { key: 'errorHandling', name: '错误处理' },
+                    { key: 'overall', name: '总体结果' }
+                ];
+                
+                modules.forEach(module => {
+                    const result = testResults[module.key];
+                    if (result && typeof result === 'object') {
+                        const card = this.createResultCard(module.name, result);
+                        this.testResultsSummary.appendChild(card);
+                    }
+                });
+            }
+
+            showSingleTestResult(testName, result) {
+                this.testResultsSection.style.display = 'block';
+                
+                // 清空现有结果
+                this.testResultsSummary.innerHTML = '';
+                
+                // 创建单项测试结果卡片
+                const card = this.createResultCard(testName, result);
+                this.testResultsSummary.appendChild(card);
+            }
+
+            createResultCard(name, result) {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                
+                const percentage = result.percentage || 0;
+                const passed = result.passed || 0;
+                const total = result.total || 0;
+                
+                // 根据通过率设置样式
+                if (percentage >= 90) {
+                    card.classList.add('success');
+                } else if (percentage >= 70) {
+                    card.classList.add('warning');
+                } else {
+                    card.classList.add('error');
+                }
+                
+                card.innerHTML = `
+                    <div class="result-number">${percentage}%</div>
+                    <div class="result-label">${name}</div>
+                    <div style="font-size: 12px; margin-top: 5px; color: #6c757d;">
+                        ${passed}/${total} 通过
+                    </div>
+                `;
+                
+                return card;
+            }
+
+            disableButtons(disabled) {
+                const buttons = document.querySelectorAll('.test-btn');
+                buttons.forEach(btn => {
+                    btn.disabled = disabled;
+                });
+            }
+
+            clearConsole() {
+                this.consoleOutput.textContent = '控制台已清空...\n';
+                this.showStatus('info', 'ℹ️ 控制台输出已清空');
+            }
+
+            openDevConsole() {
+                this.showStatus('info', 'ℹ️ 请按 F12 或右键选择"检查"打开开发者控制台');
+                
+                // 在控制台输出提示信息
+                console.log('🔍 开发者控制台已打开');
+                console.log('💡 提示: 您可以在这里看到更详细的测试日志');
+                console.log('📝 可用的测试命令:');
+                console.log('  - runAllTests() : 运行所有测试');
+                console.log('  - runAuthTests() : 运行认证测试');
+                console.log('  - runToolManagementTests() : 运行工具管理测试');
+                console.log('  - runSearchTests() : 运行搜索测试');
+                console.log('  - runErrorHandlingTests() : 运行错误处理测试');
+                console.log('  - showTestHelp() : 显示测试帮助');
+            }
+
+            showHelp() {
+                if (window.showTestHelp) {
+                    window.showTestHelp();
+                    this.showStatus('info', 'ℹ️ 帮助信息已显示在控制台中');
+                } else {
+                    this.showStatus('error', '❌ 帮助功能未加载');
+                }
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            window.testPageController = new TestPageController();
+        });
+
+        // 添加页面专用的快捷键处理
+        document.addEventListener('keydown', (e) => {
+            // 阻止与测试脚本中相同的快捷键冲突
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
+                switch (e.key) {
+                    case 'R':
+                        e.preventDefault();
+                        if (window.testPageController) {
+                            window.testPageController.runAllTests();
+                        }
+                        break;
+                    case 'H':
+                        e.preventDefault();
+                        if (window.testPageController) {
+                            window.testPageController.showHelp();
+                        }
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
