@@ -266,19 +266,19 @@
   - _Requirements: 文档需求_
 
 - [-] 16. Vercel 部署
-- [-] 16.1 创建 Vercel 项目
+- [x] 16.1 创建 Vercel 项目
   - 注册 Vercel 账号
   - 导入 GitHub 仓库
   - 配置项目设置
   - _Requirements: 部署需求_
 
-- [ ] 16.2 配置环境变量
+- [x] 16.2 配置环境变量
   - 在 Vercel 添加 Supabase URL
   - 在 Vercel 添加 Supabase Key
   - 验证配置正确
   - _Requirements: 9.1, 9.2_
 
-- [ ] 16.3 部署和测试
+- [-] 16.3 部署和测试
   - 触发首次部署
   - 测试生产环境功能
   - 检查控制台错误

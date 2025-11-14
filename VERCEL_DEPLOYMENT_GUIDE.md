@@ -64,12 +64,19 @@ git push -u origin main
 2. 添加以下环境变量：
 
    **VITE_SUPABASE_URL**
+   - Name: `VITE_SUPABASE_URL`
    - Value: 您的 Supabase 项目 URL（格式：https://xxxxx.supabase.co）
    - Environment: Production, Preview, Development（全选）
 
    **VITE_SUPABASE_ANON_KEY**
+   - Name: `VITE_SUPABASE_ANON_KEY`
    - Value: 您的 Supabase anon public key
    - Environment: Production, Preview, Development（全选）
+
+**重要提示：**
+- 确保变量名完全匹配（区分大小写）
+- 确保为所有环境（Production, Preview, Development）都设置了这些变量
+- 添加环境变量后，需要重新部署项目才能生效
 
 ### 3.2 获取 Supabase 配置
 
@@ -118,7 +125,20 @@ git push -u origin main
 3. 确认没有 JavaScript 错误
 4. 检查 Network 标签页确认 API 请求正常
 
-### 5.3 测试 Supabase 连接
+### 5.3 验证环境变量配置
+
+1. 打开浏览器开发者工具（F12）
+2. 在 Console 中输入以下命令检查配置：
+   ```javascript
+   // 检查 Supabase 客户端是否正确初始化
+   console.log('Supabase client:', window.supabaseClient);
+   
+   // 检查配置是否正确加载
+   console.log('Config loaded:', window.supabaseClient ? '✅' : '❌');
+   ```
+3. 如果看到错误，检查环境变量是否正确设置
+
+### 5.4 测试 Supabase 连接
 
 1. 尝试注册新用户
 2. 检查 Supabase 仪表板中是否创建了用户记录
