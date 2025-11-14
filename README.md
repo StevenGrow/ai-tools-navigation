@@ -1,6 +1,6 @@
 # AI 工具导航
 
-一个简洁现代的 AI 工具导航网站，收录了常用的 AI 工具，方便快速访问。
+一个简洁现代的 AI 工具导航网站，收录了常用的 AI 工具，支持用户认证和自定义工具管理。
 
 ## 🌟 特点
 
@@ -8,6 +8,10 @@
 - 🎨 简洁现代的界面风格
 - 🚀 纯静态页面，加载快速
 - 🔗 一键跳转到 AI 工具网站
+- 👤 用户注册和登录功能
+- ➕ 添加自定义 AI 工具
+- ✏️ 编辑和删除自己的工具
+- 🔍 搜索系统工具和自定义工具
 
 ## 📂 项目结构
 
@@ -85,6 +89,108 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 **详细设置步骤请参考 `SUPABASE_SETUP_GUIDE.md` 文件。**
 
+## 🚀 部署指南
+
+### 部署到 Vercel（推荐）
+
+#### 前提条件
+
+1. GitHub 账号
+2. Vercel 账号（可用 GitHub 登录）
+3. 已配置的 Supabase 项目
+
+#### 步骤 1：推送代码到 GitHub
+
+```bash
+# 如果还没有推送到 GitHub
+git remote add origin https://github.com/你的用户名/ai-tools-nav.git
+git branch -M main
+git push -u origin main
+```
+
+#### 步骤 2：在 Vercel 创建项目
+
+1. 访问 [Vercel](https://vercel.com) 并登录
+2. 点击 "New Project"
+3. 导入你的 GitHub 仓库
+4. 项目设置保持默认即可
+5. 点击 "Deploy"
+
+#### 步骤 3：配置环境变量
+
+1. 在 Vercel 项目仪表板中，点击 "Settings"
+2. 选择 "Environment Variables"
+3. 添加以下环境变量：
+
+| Name | Value | Environment |
+|------|-------|-------------|
+| `VITE_SUPABASE_URL` | 你的 Supabase 项目 URL | Production, Preview, Development |
+| `VITE_SUPABASE_ANON_KEY` | 你的 Supabase anon key | Production, Preview, Development |
+
+4. 点击 "Save"
+5. 重新部署项目（Deployments > 最新部署 > Redeploy）
+
+#### 步骤 4：配置自定义域名（可选）
+
+1. 在 Vercel 项目设置中，选择 "Domains"
+2. 添加你的自定义域名
+3. 按照提示配置 DNS 记录
+4. 等待 SSL 证书自动生成
+
+### 部署到其他平台
+
+#### Netlify
+
+1. 将代码推送到 GitHub
+2. 在 Netlify 中导入 GitHub 仓库
+3. 在 Site settings > Environment variables 中添加环境变量
+4. 部署完成
+
+#### GitHub Pages
+
+**注意：** GitHub Pages 不支持环境变量，需要直接在代码中配置 Supabase 密钥。
+
+1. 在 `js/config.js` 中直接填入 Supabase 配置
+2. 推送到 GitHub
+3. 在仓库设置中启用 GitHub Pages
+4. 选择 main 分支作为源
+
+### 本地开发服务器
+
+如果需要在本地运行开发服务器（支持环境变量）：
+
+```bash
+# 安装 Vite（如果需要）
+npm install -g vite
+
+# 启动开发服务器
+vite
+
+# 或者使用 Python 简单服务器
+python -m http.server 8000
+```
+
+## 🔧 环境变量配置
+
+### 开发环境
+
+1. 复制 `.env.example` 为 `.env`
+2. 填入真实的 Supabase 配置：
+
+```bash
+VITE_SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+### 生产环境
+
+在部署平台（Vercel、Netlify 等）的环境变量设置中添加相同的变量。
+
+**重要提示：**
+- 不要将包含真实密钥的 `.env` 文件提交到 Git
+- Supabase 的 anon key 是公开密钥，可以安全地暴露在前端代码中
+- 数据安全通过 Supabase 的 Row Level Security (RLS) 策略保证
+
 ## 📦 工具分类
 
 - 💬 AI 对话助手
@@ -109,6 +215,66 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 MIT License
 
+## 🐛 故障排除
+
+### 常见问题
+
+#### 1. 用户认证功能不工作
+
+- 检查 Supabase 配置是否正确
+- 确认环境变量已正确设置
+- 查看浏览器控制台是否有错误信息
+- 验证 Supabase 项目是否正常运行
+
+#### 2. 自定义工具无法保存
+
+- 确认用户已登录
+- 检查 Supabase 数据库表是否正确创建
+- 验证 RLS 策略是否已启用
+- 查看网络请求是否成功
+
+#### 3. 部署后环境变量不生效
+
+- 确认在部署平台正确设置了环境变量
+- 检查变量名是否正确（区分大小写）
+- 重新部署项目以应用新的环境变量
+
+#### 4. 搜索功能异常
+
+- 清除浏览器缓存
+- 检查 JavaScript 控制台错误
+- 确认所有 JS 文件正确加载
+
+### 获取帮助
+
+如果遇到问题，请：
+
+1. 查看浏览器控制台错误信息
+2. 检查 Supabase 项目日志
+3. 参考 `SUPABASE_SETUP_GUIDE.md` 详细设置步骤
+4. 提交 Issue 并附上错误信息
+
+## 📚 相关文档
+
+- [Supabase 设置指南](SUPABASE_SETUP_GUIDE.md)
+- [认证功能使用指南](AUTH_USAGE_GUIDE.md)
+- [响应式测试指南](RESPONSIVE_TESTING_GUIDE.md)
+
 ## 🤝 贡献
 
 欢迎提交 Issue 和 Pull Request！
+
+### 贡献指南
+
+1. Fork 本仓库
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启 Pull Request
+
+### 开发规范
+
+- 保持代码简洁易读
+- 添加必要的注释
+- 确保响应式设计兼容性
+- 测试所有功能正常工作

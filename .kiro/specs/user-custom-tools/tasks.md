@@ -246,20 +246,20 @@
   - 测试网络错误处理
   - _Requirements: 9.5_
 
-- [-] 15. 准备部署
-- [-] 15.1 创建 GitHub 仓库
+- [x] 15. 准备部署
+- [x] 15.1 创建 GitHub 仓库
   - 初始化 Git 仓库
   - 创建 .gitignore 文件
   - 推送代码到 GitHub
   - _Requirements: 部署需求_
 
-- [ ] 15.2 配置环境变量
+- [x] 15.2 配置环境变量
   - 创建 .env.example 文件
   - 记录 Supabase 配置说明
   - 准备生产环境配置
   - _Requirements: 9.1, 9.2_
 
-- [ ] 15.3 编写部署文档
+- [x] 15.3 编写部署文档
   - 更新 README.md
   - 添加部署步骤说明
   - 添加环境变量配置说明
