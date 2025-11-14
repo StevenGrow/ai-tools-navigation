@@ -44,15 +44,31 @@
         // 配置检查
         function checkConfig() {
             const configDiv = document.getElementById('configCheck');
+            
+            // 调试信息
+            console.log('=== 配置检查开始 ===');
+            console.log('DOM 状态:', document.readyState);
+            console.log('所有 meta 标签:', document.querySelectorAll('meta'));
+            
             const urlMeta = document.querySelector('meta[name="supabase-url"]');
             const keyMeta = document.querySelector('meta[name="supabase-key"]');
             
+            console.log('URL Meta:', urlMeta);
+            console.log('Key Meta:', keyMeta);
+            
             let html = '';
+            
+            // 添加 DOM 状态信息
+            html += `<p class="info">DOM 状态: ${document.readyState}</p>`;
+            html += `<p class="info">Meta 标签总数: ${document.querySelectorAll('meta').length}</p>`;
             
             if (urlMeta) {
                 html += `<p class="success">✅ Supabase URL: ${urlMeta.getAttribute('content')}</p>`;
             } else {
                 html += `<p class="error">❌ Supabase URL meta 标签未找到</p>`;
+                // 列出所有 meta 标签用于调试
+                const allMetas = Array.from(document.querySelectorAll('meta')).map(m => m.getAttribute('name')).filter(Boolean);
+                html += `<p class="warning">现有 meta 标签: ${allMetas.join(', ')}</p>`;
             }
             
             if (keyMeta) {
@@ -127,8 +143,12 @@
         }
         
         // 页面加载时检查配置
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkConfig, 500); // 等待 DOM 完全加载
+        });
+        
         window.addEventListener('load', () => {
-            setTimeout(checkConfig, 1000); // 等待配置加载
+            setTimeout(checkConfig, 1000); // 再次检查确保配置加载
         });
     </script>
 </body>
