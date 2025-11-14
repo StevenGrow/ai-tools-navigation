@@ -265,8 +265,8 @@
   - 添加环境变量配置说明
   - _Requirements: 文档需求_
 
-- [ ] 16. Vercel 部署
-- [ ] 16.1 创建 Vercel 项目
+- [-] 16. Vercel 部署
+- [-] 16.1 创建 Vercel 项目
   - 注册 Vercel 账号
   - 导入 GitHub 仓库
   - 配置项目设置
