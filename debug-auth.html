@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证调试页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+        button { padding: 10px 15px; margin: 5px; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Supabase 认证调试</h1>
+    
+    <div class="debug-section">
+        <h3>配置检查</h3>
+        <div id="configCheck"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>测试登录</h3>
+        <input type="email" id="testEmail" placeholder="邮箱">
+        <input type="password" id="testPassword" placeholder="密码">
+        <button onclick="testLogin()">测试登录</button>
+        <div id="loginResult"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h3>当前用户状态</h3>
+        <button onclick="checkUser()">检查用户</button>
+        <div id="userStatus"></div>
+    </div>
+
+    <!-- Supabase JavaScript SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    
+    <script>
+        // 配置检查
+        function checkConfig() {
+            const configDiv = document.getElementById('configCheck');
+            const urlMeta = document.querySelector('meta[name="supabase-url"]');
+            const keyMeta = document.querySelector('meta[name="supabase-key"]');
+            
+            let html = '';
+            
+            if (urlMeta) {
+                html += `<p class="success">✅ Supabase URL: ${urlMeta.getAttribute('content')}</p>`;
+            } else {
+                html += `<p class="error">❌ Supabase URL meta 标签未找到</p>`;
+            }
+            
+            if (keyMeta) {
+                html += `<p class="success">✅ Supabase Key: ${keyMeta.getAttribute('content').substring(0, 20)}...</p>`;
+            } else {
+                html += `<p class="error">❌ Supabase Key meta 标签未找到</p>`;
+            }
+            
+            if (window.supabaseClient) {
+                html += `<p class="success">✅ Supabase 客户端已初始化</p>`;
+            } else {
+                html += `<p class="error">❌ Supabase 客户端未初始化</p>`;
+            }
+            
+            configDiv.innerHTML = html;
+        }
+        
+        // 测试登录
+        async function testLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            const resultDiv = document.getElementById('loginResult');
+            
+            if (!email || !password) {
+                resultDiv.innerHTML = '<p class="warning">请输入邮箱和密码</p>';
+                return;
+            }
+            
+            try {
+                resultDiv.innerHTML = '<p>正在测试登录...</p>';
+                
+                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error) {
+                    resultDiv.innerHTML = `<p class="error">❌ 登录失败: ${error.message}</p>`;
+                    console.error('登录错误详情:', error);
+                } else {
+                    resultDiv.innerHTML = `<p class="success">✅ 登录成功! 用户: ${data.user.email}</p>`;
+                    console.log('登录成功:', data);
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<p class="error">❌ 网络错误: ${err.message}</p>`;
+                console.error('网络错误:', err);
+            }
+        }
+        
+        // 检查当前用户
+        async function checkUser() {
+            const statusDiv = document.getElementById('userStatus');
+            
+            try {
+                const { data: { user }, error } = await window.supabaseClient.auth.getUser();
+                
+                if (error) {
+                    statusDiv.innerHTML = `<p class="error">❌ 获取用户失败: ${error.message}</p>`;
+                } else if (user) {
+                    statusDiv.innerHTML = `
+                        <p class="success">✅ 当前用户: ${user.email}</p>
+                        <p>用户 ID: ${user.id}</p>
+                        <p>邮箱确认: ${user.email_confirmed_at ? '已确认' : '未确认'}</p>
+                        <p>创建时间: ${new Date(user.created_at).toLocaleString()}</p>
+                    `;
+                } else {
+                    statusDiv.innerHTML = '<p class="warning">⚠️ 当前无用户登录</p>';
+                }
+            } catch (err) {
+                statusDiv.innerHTML = `<p class="error">❌ 检查用户失败: ${err.message}</p>`;
+            }
+        }
+        
+        // 页面加载时检查配置
+        window.addEventListener('load', () => {
+            setTimeout(checkConfig, 1000); // 等待配置加载
+        });
+    </script>
+</body>
+</html>
