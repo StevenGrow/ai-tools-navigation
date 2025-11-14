@@ -34,7 +34,7 @@ class App {
    */
   async init() {
     try {
-      console.log('🚀 开始初始化应用...');
+      console.log('开始初始化应用...');
       
       // 1. 等待 Supabase 客户端加载
       await this.waitForSupabase();
@@ -54,7 +54,7 @@ class App {
       // 6. 标记应用已初始化
       this.isInitialized = true;
       
-      console.log('✅ 应用初始化完成');
+      console.log('应用初始化完成');
       
       // 显示欢迎消息
       this.showWelcomeMessage();
@@ -78,7 +78,7 @@ class App {
         
         if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient) {
           this.supabaseClient = window.supabaseClient;
-          console.log('✅ Supabase 客户端已加载');
+          console.log('Supabase 客户端已加载');
           resolve();
         } else if (attempts >= maxAttempts) {
           reject(new Error('Supabase 客户端加载超时'));
@@ -95,23 +95,23 @@ class App {
    * 初始化所有管理器
    */
   initializeManagers() {
-    console.log('📦 初始化管理器...');
+    console.log('初始化管理器...');
     
     // 初始化 UI 管理器
     this.uiManager = new UIManager();
-    console.log('✅ UI 管理器已初始化');
+    console.log('UI 管理器已初始化');
     
     // 初始化认证管理器
     this.authManager = new AuthManager(this.supabaseClient);
-    console.log('✅ 认证管理器已初始化');
+    console.log('认证管理器已初始化');
     
     // 初始化工具管理器
     this.toolsManager = new ToolsManager(this.supabaseClient);
-    console.log('✅ 工具管理器已初始化');
+    console.log('工具管理器已初始化');
     
     // 初始化会话管理器
     this.sessionManager = new SessionManager(this.supabaseClient);
-    console.log('✅ 会话管理器已初始化');
+    console.log('会话管理器已初始化');
     
     // 将管理器实例设置为全局变量（向后兼容）
     window.uiManager = this.uiManager;
@@ -123,7 +123,7 @@ class App {
    * 设置事件监听器
    */
   setupEventListeners() {
-    console.log('🔗 设置事件监听器...');
+    console.log('设置事件监听器...');
     
     // 认证相关事件
     this.setupAuthEventListeners();
@@ -140,7 +140,7 @@ class App {
     // 全局事件
     this.setupGlobalEventListeners();
     
-    console.log('✅ 事件监听器设置完成');
+    console.log('事件监听器设置完成');
   }
 
   /**
@@ -369,19 +369,19 @@ class App {
    */
   async initializeAuthState() {
     try {
-      console.log('🔐 初始化认证状态...');
+      console.log('初始化认证状态...');
       
       // 初始化会话管理
       const user = await this.sessionManager.initializeSession();
       
       if (user) {
         this.currentUser = user;
-        console.log('✅ 用户会话已恢复:', user.email);
+        console.log('用户会话已恢复:', user.email);
         
         // 开始会话监控
         this.sessionManager.startSessionMonitoring();
       } else {
-        console.log('ℹ️ 用户未登录');
+        console.log('用户未登录');
       }
       
     } catch (error) {
@@ -394,14 +394,14 @@ class App {
    */
   async loadInitialData() {
     try {
-      console.log('📊 加载初始数据...');
+      console.log('加载初始数据...');
       
       // 如果用户已登录，加载其自定义工具
       if (this.currentUser) {
         await this.loadUserCustomTools();
       }
       
-      console.log('✅ 初始数据加载完成');
+      console.log('初始数据加载完成');
       
     } catch (error) {
       console.error('❌ 加载初始数据失败:', error);
@@ -415,7 +415,10 @@ class App {
     if (!this.currentUser) return;
     
     try {
-      console.log('🔧 加载用户自定义工具...');
+      console.log('加载用户自定义工具...');
+      
+      // 显示加载动画
+      this.uiManager.showLoading('正在加载您的自定义工具...', 'dots');
       
       const customTools = await this.toolsManager.getUserTools(this.currentUser.id);
       this.customTools = customTools;
@@ -423,19 +426,41 @@ class App {
       // 清除现有的自定义工具
       this.removeCustomToolsFromUI();
       
-      // 将自定义工具添加到对应分类
-      customTools.forEach(tool => {
-        this.addToolToCategory(tool);
-      });
+      // 使用进度条显示工具加载进度
+      if (customTools.length > 0) {
+        this.uiManager.hideLoading();
+        this.uiManager.showProgress(0, '正在加载自定义工具...');
+        
+        for (let i = 0; i < customTools.length; i++) {
+          const tool = customTools[i];
+          this.addToolToCategory(tool);
+          
+          // 更新进度
+          const progress = ((i + 1) / customTools.length) * 100;
+          this.uiManager.updateProgress(progress, `正在加载工具 ${i + 1}/${customTools.length}`);
+          
+          // 添加小延迟以显示进度效果
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        
+        this.uiManager.hideProgress();
+      } else {
+        this.uiManager.hideLoading();
+      }
       
-      console.log(`✅ 已加载 ${customTools.length} 个自定义工具`);
+      console.log(`已加载 ${customTools.length} 个自定义工具`);
       
       if (customTools.length > 0) {
-        this.uiManager.showNotification(`已加载 ${customTools.length} 个自定义工具`, 'success');
+        this.uiManager.showCompletionFeedback('自定义工具加载完成', {
+          count: customTools.length,
+          time: '0.5秒'
+        });
       }
       
     } catch (error) {
       console.error('❌ 加载自定义工具失败:', error);
+      this.uiManager.hideLoading();
+      this.uiManager.hideProgress();
       this.uiManager.showNotification('加载自定义工具失败，请刷新页面重试', 'error');
     }
   }
@@ -497,7 +522,7 @@ class App {
     // 确保系统工具可见
     this.ensureSystemToolsVisible();
     
-    console.log('✅ 用户登出处理完成');
+    console.log('用户登出处理完成');
   }
 
   /**
@@ -508,7 +533,7 @@ class App {
       this.uiManager.showNotification(`欢迎回来，${this.currentUser.email}！`, 'success');
     } else {
       // 可以显示一个简单的应用就绪消息
-      console.log('🎉 AI 工具导航网站已就绪');
+      console.log('AI 工具导航网站已就绪');
     }
   }
 
@@ -577,6 +602,61 @@ class App {
   }
 
   /**
+   * 验证邮箱格式
+   * @param {string} email - 邮箱地址
+   * @returns {boolean}
+   */
+  isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  }
+
+  /**
+   * 验证密码强度
+   * @param {string} password - 密码
+   * @returns {Object}
+   */
+  validatePassword(password) {
+    const result = {
+      valid: true,
+      strength: 'weak',
+      issues: []
+    };
+
+    if (!password || password.length < 6) {
+      result.valid = false;
+      result.issues.push('密码长度至少需要6个字符');
+    }
+
+    if (password && password.length >= 8) {
+      result.strength = 'medium';
+    }
+
+    if (password && /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+      result.strength = 'strong';
+    }
+
+    return result;
+  }
+
+  /**
+   * 获取分类中文名称
+   * @param {string} category - 分类ID
+   * @returns {string}
+   */
+  getCategoryName(category) {
+    const categoryNames = {
+      chat: '对话助手',
+      image: '绘画',
+      video: '视频',
+      writing: '写作',
+      coding: '编程',
+      audio: '音频'
+    };
+    return categoryNames[category] || category;
+  }
+
+  /**
    * 获取应用状态信息
    */
   getAppState() {
@@ -592,7 +672,7 @@ class App {
    * 清理资源
    */
   cleanup() {
-    console.log('🧹 清理应用资源...');
+    console.log('清理应用资源...');
     
     // 停止会话监控
     if (this.sessionManager) {
@@ -610,7 +690,7 @@ class App {
     this.currentUser = null;
     this.customTools = [];
     
-    console.log('✅ 应用资源清理完成');
+    console.log('应用资源清理完成');
   }
 
   /**
@@ -619,9 +699,11 @@ class App {
   async handleLoginSubmit(e) {
     e.preventDefault();
     
+    const submitBtn = e.target.querySelector('.form-submit-btn');
+    
     try {
       // 显示加载状态
-      this.uiManager.showFormLoading(e.target);
+      this.uiManager.showButtonLoading(submitBtn, '登录中...', 'dots');
       this.uiManager.hideError('loginError');
       
       // 获取表单数据
@@ -630,10 +712,21 @@ class App {
       const password = formData.get('password');
       
       // 验证表单
-      const validation = FormValidator.validateLoginForm(email, password);
-      if (!validation.valid) {
-        const firstError = Object.values(validation.errors)[0];
-        this.uiManager.showError('loginError', firstError);
+      if (!email || !password) {
+        this.uiManager.showError('loginError', '请填写完整的登录信息', 'validation', [
+          '确保邮箱地址已填写',
+          '确保密码已填写',
+          '检查输入格式是否正确'
+        ]);
+        return;
+      }
+      
+      if (!this.isValidEmail(email)) {
+        this.uiManager.showError('loginError', '请输入有效的邮箱地址', 'validation', [
+          '检查邮箱格式是否正确',
+          '确保包含@符号和域名',
+          '避免使用特殊字符'
+        ]);
         return;
       }
       
@@ -642,21 +735,37 @@ class App {
       
       if (result.success) {
         // 登录成功
-        this.uiManager.hideLoginModal();
-        this.uiManager.showNotification('登录成功！', 'success');
+        this.uiManager.showButtonLoading(submitBtn, '登录成功！');
         
-        // 清空表单
-        e.target.reset();
+        // 短暂延迟显示成功状态
+        setTimeout(() => {
+          this.uiManager.hideLoginModal();
+          this.uiManager.showSuccessFeedback('login', '', {
+            subtitle: `欢迎回来，${this.currentUser?.email || ''}`,
+            celebrate: true
+          });
+          
+          // 清空表单
+          e.target.reset();
+        }, 800);
       } else {
-        // 登录失败
-        this.uiManager.showError('loginError', result.error);
+        // 登录失败 - 使用增强错误处理
+        this.uiManager.showAuthError(new Error(result.error));
       }
       
     } catch (error) {
       console.error('登录失败:', error);
-      this.uiManager.showError('loginError', '登录失败，请稍后重试');
+      
+      // 根据错误类型显示不同的错误信息
+      if (error.message.includes('network') || error.message.includes('fetch')) {
+        this.uiManager.showNetworkError(error);
+      } else {
+        this.uiManager.showAuthError(error);
+      }
     } finally {
-      this.uiManager.hideFormLoading(e.target);
+      if (!e.target.querySelector('.form-submit-btn').textContent.includes('成功')) {
+        this.uiManager.hideButtonLoading(submitBtn);
+      }
     }
   }
 
@@ -666,9 +775,11 @@ class App {
   async handleRegisterSubmit(e) {
     e.preventDefault();
     
+    const submitBtn = e.target.querySelector('.form-submit-btn');
+    
     try {
       // 显示加载状态
-      this.uiManager.showFormLoading(e.target);
+      this.uiManager.showButtonLoading(submitBtn, '注册中...', 'dots');
       this.uiManager.hideError('registerError');
       
       // 获取表单数据
@@ -678,10 +789,40 @@ class App {
       const confirmPassword = formData.get('confirmPassword');
       
       // 验证表单
-      const validation = FormValidator.validateRegisterForm(email, password, confirmPassword);
-      if (!validation.valid) {
-        const firstError = Object.values(validation.errors)[0];
-        this.uiManager.showError('registerError', firstError);
+      if (!email || !password || !confirmPassword) {
+        this.uiManager.showError('registerError', '请填写完整的注册信息', 'validation', [
+          '确保所有字段都已填写',
+          '检查邮箱格式是否正确',
+          '确认密码是否匹配'
+        ]);
+        return;
+      }
+      
+      if (!this.isValidEmail(email)) {
+        this.uiManager.showError('registerError', '请输入有效的邮箱地址', 'validation', [
+          '检查邮箱格式是否正确',
+          '确保包含@符号和域名',
+          '避免使用特殊字符'
+        ]);
+        return;
+      }
+      
+      const passwordValidation = this.validatePassword(password);
+      if (!passwordValidation.valid) {
+        this.uiManager.showError('registerError', passwordValidation.issues[0], 'validation', [
+          '使用至少6个字符的密码',
+          '建议包含大小写字母和数字',
+          '避免使用过于简单的密码'
+        ]);
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        this.uiManager.showError('registerError', '两次输入的密码不匹配', 'validation', [
+          '确保两次输入的密码完全相同',
+          '注意大小写是否一致',
+          '重新输入确认密码'
+        ]);
         return;
       }
       
@@ -690,21 +831,35 @@ class App {
       
       if (result.success) {
         // 注册成功
-        this.uiManager.hideRegisterModal();
-        this.uiManager.showNotification('注册成功！请查收邮箱确认邮件', 'success');
+        this.uiManager.showButtonLoading(submitBtn, '注册成功！');
         
-        // 清空表单
-        e.target.reset();
+        setTimeout(() => {
+          this.uiManager.hideRegisterModal();
+          this.uiManager.showSuccessFeedback('register', '', {
+            subtitle: '请查收邮箱确认邮件',
+            celebrate: true
+          });
+          
+          // 清空表单
+          e.target.reset();
+        }, 800);
       } else {
         // 注册失败
-        this.uiManager.showError('registerError', result.error);
+        this.uiManager.showAuthError(new Error(result.error));
       }
       
     } catch (error) {
       console.error('注册失败:', error);
-      this.uiManager.showError('registerError', '注册失败，请稍后重试');
+      
+      if (error.message.includes('network') || error.message.includes('fetch')) {
+        this.uiManager.showNetworkError(error);
+      } else {
+        this.uiManager.showAuthError(error);
+      }
     } finally {
-      this.uiManager.hideFormLoading(e.target);
+      if (!e.target.querySelector('.form-submit-btn').textContent.includes('成功')) {
+        this.uiManager.hideButtonLoading(submitBtn);
+      }
     }
   }
 
@@ -724,7 +879,9 @@ class App {
           const result = await this.authManager.signOut();
           
           if (result.success) {
-            this.uiManager.showNotification('已成功登出', 'success');
+            this.uiManager.showSuccessFeedback('logout', '', {
+              subtitle: '期待您的再次访问'
+            });
           } else {
             this.uiManager.showNotification(result.error || '登出失败', 'error');
           }
@@ -749,9 +906,11 @@ class App {
   async handleAddToolSubmit(e) {
     e.preventDefault();
     
+    const submitBtn = e.target.querySelector('.form-submit-btn');
+    
     try {
       // 显示加载状态
-      this.uiManager.showFormLoading(e.target);
+      this.uiManager.showButtonLoading(submitBtn, '添加中...', 'pulse');
       this.uiManager.hideError('addToolError');
       
       // 获取表单数据
@@ -767,24 +926,55 @@ class App {
       // 添加工具
       const newTool = await this.toolsManager.addTool(toolData);
       
-      // 成功后的处理
-      this.uiManager.hideAddToolModal();
-      this.uiManager.showNotification('工具添加成功！', 'success');
+      // 显示成功状态
+      this.uiManager.showButtonLoading(submitBtn, '添加成功！');
       
-      // 将新工具添加到对应分类
-      this.addToolToCategory(newTool);
-      
-      // 更新自定义工具列表
-      this.customTools.push(newTool);
-      
-      // 重置表单
-      e.target.reset();
+      // 短暂延迟后处理成功逻辑
+      setTimeout(() => {
+        // 成功后的处理
+        this.uiManager.hideAddToolModal();
+        this.uiManager.showSuccessFeedback('add', '工具', {
+          subtitle: `${toolData.name} 已添加到 ${this.getCategoryName(toolData.category)}`,
+          celebrate: true
+        });
+        
+        // 将新工具添加到对应分类
+        this.addToolToCategory(newTool);
+        
+        // 更新自定义工具列表
+        this.customTools.push(newTool);
+        
+        // 重置表单
+        e.target.reset();
+      }, 800);
       
     } catch (error) {
       console.error('添加工具失败:', error);
-      this.uiManager.showError('addToolError', error.message);
-    } finally {
-      this.uiManager.hideFormLoading(e.target);
+      
+      // 根据错误类型显示不同的错误信息
+      if (error.message.includes('网址')) {
+        this.uiManager.showError('addToolError', error.message, 'validation', [
+          '确保网址以 http:// 或 https:// 开头',
+          '检查网址格式是否正确',
+          '确认网址可以正常访问'
+        ]);
+      } else if (error.message.includes('名称')) {
+        this.uiManager.showError('addToolError', error.message, 'validation', [
+          '工具名称不能为空',
+          '名称长度不超过100个字符',
+          '使用简洁明了的名称'
+        ]);
+      } else if (error.message.includes('network') || error.message.includes('fetch')) {
+        this.uiManager.showNetworkError(error);
+      } else {
+        this.uiManager.showError('addToolError', error.message || '添加工具失败，请重试', 'error', [
+          '检查网络连接',
+          '确认所有信息填写正确',
+          '稍后重试'
+        ]);
+      }
+      
+      this.uiManager.hideButtonLoading(submitBtn);
     }
   }
 
@@ -823,7 +1013,9 @@ class App {
       
       // 成功后的处理
       this.uiManager.hideEditToolModal();
-      this.uiManager.showNotification('工具更新成功！', 'success');
+      this.uiManager.showSuccessFeedback('update', updatedTool.tool_name, {
+        subtitle: '工具信息已更新'
+      });
       
       // 更新页面中的工具卡片
       this.updateToolCardInUI(updatedTool);
@@ -854,30 +1046,40 @@ class App {
       return;
     }
 
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+
     try {
       // 显示加载状态
-      const confirmBtn = document.getElementById('confirmDeleteBtn');
-      this.uiManager.showButtonLoading(confirmBtn, '删除中...');
+      this.uiManager.showButtonLoading(confirmBtn, '删除中...', 'bars');
 
       // 删除工具
       await this.toolsManager.deleteTool(toolId);
       
-      // 成功后的处理
-      this.uiManager.hideDeleteToolModal();
-      this.uiManager.showNotification('工具删除成功！', 'success');
+      // 显示成功状态
+      this.uiManager.showButtonLoading(confirmBtn, '删除成功！');
       
-      // 从页面移除工具卡片
-      this.removeToolCardFromUI(toolId);
-      
-      // 从自定义工具列表中移除
-      this.customTools = this.customTools.filter(tool => tool.id !== toolId);
+      // 短暂延迟后处理成功逻辑
+      setTimeout(() => {
+        // 获取工具信息用于反馈
+        const tool = this.customTools.find(t => t.id === toolId);
+        const toolName = tool ? tool.tool_name : '工具';
+        
+        // 成功后的处理
+        this.uiManager.hideDeleteToolModal();
+        this.uiManager.showSuccessFeedback('delete', toolName, {
+          subtitle: '已从您的工具列表中移除'
+        });
+        
+        // 从页面移除工具卡片
+        this.removeToolCardFromUI(toolId);
+        
+        // 从自定义工具列表中移除
+        this.customTools = this.customTools.filter(tool => tool.id !== toolId);
+      }, 800);
       
     } catch (error) {
       console.error('删除工具失败:', error);
       this.uiManager.showNotification(error.message || '删除工具失败，请重试', 'error');
-    } finally {
-      // 恢复按钮状态
-      const confirmBtn = document.getElementById('confirmDeleteBtn');
       this.uiManager.hideButtonLoading(confirmBtn);
     }
   }
@@ -991,8 +1193,22 @@ class App {
         // 为自定义工具添加事件监听器
         this.addCustomToolEventListeners(toolCard, tool);
         
+        // 添加入场动画
+        toolCard.style.opacity = '0';
+        toolCard.style.transform = 'translateY(20px)';
+        
         // 将自定义工具插入到网格中，保持两列布局
         this.insertToolIntoGrid(toolsGrid, toolCard);
+        
+        // 触发入场动画
+        setTimeout(() => {
+          toolCard.style.transition = 'all 0.3s ease';
+          toolCard.style.opacity = '1';
+          toolCard.style.transform = 'translateY(0)';
+          
+          // 显示浮动成功消息
+          this.uiManager.showFloatingSuccess(toolCard, '已添加');
+        }, 50);
         
         // 确保分类可见（处理空分类情况）
         categorySection.classList.remove('hidden');
@@ -1417,7 +1633,7 @@ class App {
    * 响应式测试功能
    */
   testResponsiveLayout() {
-    console.log('🧪 开始响应式布局测试...');
+    console.log('开始响应式布局测试...');
     
     const testResults = {
       viewport: this.getViewportInfo(),
@@ -1427,7 +1643,7 @@ class App {
       forms: this.testFormResponsiveness()
     };
     
-    console.log('📊 响应式测试结果:', testResults);
+    console.log('响应式测试结果:', testResults);
     
     // 显示测试结果
     this.displayTestResults(testResults);
@@ -1605,8 +1821,8 @@ class App {
   displayTestResults(results) {
     const { viewport, modals, toolCards, navigation, forms } = results;
     
-    console.log(`📱 当前视口: ${viewport.width}x${viewport.height} (${viewport.breakpoint})`);
-    console.log(`🎯 触摸友好性: 工具卡片 ${toolCards.touchFriendly ? '✅' : '❌'}, 表单 ${forms.touchFriendly ? '✅' : '❌'}`);
+    console.log(`当前视口: ${viewport.width}x${viewport.height} (${viewport.breakpoint})`);
+    console.log(`触摸友好性: 工具卡片 ${toolCards.touchFriendly ? '通过' : '未通过'}, 表单 ${forms.touchFriendly ? '通过' : '未通过'}`);
     
     // 创建测试结果通知
     let message = `响应式测试完成 (${viewport.breakpoint}断点)`;
@@ -1636,7 +1852,7 @@ class App {
   enableTestMode() {
     document.body.classList.add('test-mode');
     document.body.querySelector('body::before').style.display = 'block';
-    console.log('🧪 测试模式已启用');
+    console.log('测试模式已启用');
   }
 
   /**
@@ -1644,7 +1860,7 @@ class App {
    */
   disableTestMode() {
     document.body.classList.remove('test-mode');
-    console.log('🧪 测试模式已禁用');
+    console.log('测试模式已禁用');
   }
 }
 

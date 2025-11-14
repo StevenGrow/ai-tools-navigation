@@ -161,7 +161,7 @@ class AuthManager {
     // 设置 Supabase 认证状态监听
     const { data: { subscription } } = this.supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('认证状态变化:', event, session?.user?.email);
+        console.log('认证状态变化:', event, session?.user?.email || '未登录');
 
         // 更新当前用户
         this.currentUser = session?.user || null;

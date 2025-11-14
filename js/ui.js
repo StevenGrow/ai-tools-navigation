@@ -444,8 +444,9 @@ class UIManager {
    * @param {string} message - 通知消息内容
    * @param {string} type - 通知类型 ('success', 'error', 'warning', 'info')
    * @param {number} duration - 显示时长（毫秒），0 表示不自动关闭
+   * @param {Object} options - 额外选项
    */
-  showNotification(message, type = 'info', duration = 3000) {
+  showNotification(message, type = 'info', duration = 3000, options = {}) {
     // 清除现有通知
     this.hideNotification();
 
@@ -455,10 +456,33 @@ class UIManager {
     notification.setAttribute('role', 'alert');
     notification.setAttribute('aria-live', 'polite');
 
+    // 添加动画类型
+    if (options.animation) {
+      notification.classList.add(`notification-${options.animation}`);
+    }
+
+    // 创建通知图标
+    const icon = document.createElement('div');
+    icon.className = 'notification-icon';
+    icon.innerHTML = this.getNotificationIcon(type);
+
     // 创建通知内容
     const content = document.createElement('div');
     content.className = 'notification-content';
-    content.textContent = message;
+    
+    // 创建主消息
+    const mainMessage = document.createElement('div');
+    mainMessage.className = 'notification-message';
+    mainMessage.textContent = message;
+    content.appendChild(mainMessage);
+
+    // 添加副消息（如果有）
+    if (options.subtitle) {
+      const subtitle = document.createElement('div');
+      subtitle.className = 'notification-subtitle';
+      subtitle.textContent = options.subtitle;
+      content.appendChild(subtitle);
+    }
 
     // 创建关闭按钮
     const closeBtn = document.createElement('button');
@@ -468,6 +492,7 @@ class UIManager {
     closeBtn.addEventListener('click', () => this.hideNotification());
 
     // 组装通知
+    notification.appendChild(icon);
     notification.appendChild(content);
     notification.appendChild(closeBtn);
 
@@ -479,6 +504,11 @@ class UIManager {
       notification.classList.add('show');
     }, 10);
 
+    // 成功类型的特殊效果
+    if (type === 'success') {
+      this.addSuccessEffects(notification, options);
+    }
+
     // 自动关闭
     if (duration > 0) {
       this.notificationTimeout = setTimeout(() => {
@@ -487,6 +517,204 @@ class UIManager {
     }
 
     return notification;
+  }
+
+  /**
+   * 获取通知图标
+   * @param {string} type - 通知类型
+   * @returns {string}
+   */
+  getNotificationIcon(type) {
+    const icons = {
+      success: '✅',
+      error: '❌',
+      warning: '⚠️',
+      info: 'ℹ️'
+    };
+    return icons[type] || icons.info;
+  }
+
+  /**
+   * 添加成功效果
+   * @param {HTMLElement} notification - 通知元素
+   * @param {Object} options - 选项
+   */
+  addSuccessEffects(notification, options = {}) {
+    // 添加成功动画类
+    notification.classList.add('notification-success-enhanced');
+    
+    // 如果启用了庆祝效果
+    if (options.celebrate) {
+      this.showCelebrationEffect();
+    }
+    
+    // 如果有进度条效果
+    if (options.progress) {
+      this.addProgressEffect(notification);
+    }
+  }
+
+  /**
+   * 显示庆祝效果
+   */
+  showCelebrationEffect() {
+    // 创建庆祝粒子效果
+    const celebration = document.createElement('div');
+    celebration.className = 'celebration-container';
+    
+    // 创建多个庆祝粒子
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'celebration-particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 2 + 's';
+      particle.style.animationDuration = (2 + Math.random() * 2) + 's';
+      celebration.appendChild(particle);
+    }
+    
+    document.body.appendChild(celebration);
+    
+    // 清理庆祝效果
+    setTimeout(() => {
+      if (celebration.parentNode) {
+        celebration.remove();
+      }
+    }, 4000);
+  }
+
+  /**
+   * 添加进度效果
+   * @param {HTMLElement} notification - 通知元素
+   */
+  addProgressEffect(notification) {
+    const progressBar = document.createElement('div');
+    progressBar.className = 'notification-progress';
+    notification.appendChild(progressBar);
+    
+    // 动画进度条
+    setTimeout(() => {
+      progressBar.style.width = '100%';
+    }, 100);
+  }
+
+  /**
+   * 显示成功操作反馈
+   * @param {string} action - 操作名称
+   * @param {string} item - 操作对象
+   * @param {Object} options - 选项
+   */
+  showSuccessFeedback(action, item = '', options = {}) {
+    const messages = {
+      login: '登录成功！',
+      logout: '已成功登出',
+      register: '注册成功！',
+      add: `${item}添加成功！`,
+      update: `${item}更新成功！`,
+      delete: `${item}删除成功！`,
+      save: '保存成功！',
+      upload: '上传成功！',
+      download: '下载成功！'
+    };
+    
+    const message = messages[action] || `${action}成功！`;
+    
+    const defaultOptions = {
+      celebrate: ['add', 'register', 'save'].includes(action),
+      progress: ['upload', 'download'].includes(action),
+      animation: 'bounce',
+      subtitle: options.subtitle
+    };
+    
+    this.showNotification(message, 'success', 4000, { ...defaultOptions, ...options });
+  }
+
+  /**
+   * 显示操作完成反馈
+   * @param {string} message - 消息
+   * @param {Object} stats - 统计信息
+   */
+  showCompletionFeedback(message, stats = {}) {
+    let subtitle = '';
+    if (stats.count) {
+      subtitle = `共处理 ${stats.count} 项`;
+    }
+    if (stats.time) {
+      subtitle += stats.count ? `，耗时 ${stats.time}` : `耗时 ${stats.time}`;
+    }
+    
+    this.showNotification(message, 'success', 5000, {
+      subtitle,
+      celebrate: true,
+      animation: 'slide'
+    });
+  }
+
+  /**
+   * 显示实时反馈
+   * @param {HTMLElement} element - 目标元素
+   * @param {string} type - 反馈类型
+   */
+  showRealTimeFeedback(element, type = 'success') {
+    if (!element) return;
+    
+    // 移除现有反馈
+    element.classList.remove('feedback-success', 'feedback-error', 'feedback-warning');
+    
+    // 添加新反馈
+    element.classList.add(`feedback-${type}`);
+    
+    // 添加反馈图标
+    const existingIcon = element.querySelector('.feedback-icon');
+    if (existingIcon) {
+      existingIcon.remove();
+    }
+    
+    const icon = document.createElement('span');
+    icon.className = 'feedback-icon';
+    icon.innerHTML = this.getNotificationIcon(type);
+    element.appendChild(icon);
+    
+    // 自动移除反馈
+    setTimeout(() => {
+      element.classList.remove(`feedback-${type}`);
+      if (icon.parentNode) {
+        icon.remove();
+      }
+    }, 2000);
+  }
+
+  /**
+   * 显示浮动成功消息
+   * @param {HTMLElement} element - 目标元素
+   * @param {string} message - 消息
+   */
+  showFloatingSuccess(element, message) {
+    if (!element) return;
+    
+    const floatingMessage = document.createElement('div');
+    floatingMessage.className = 'floating-success-message';
+    floatingMessage.textContent = message;
+    
+    // 定位到元素附近
+    const rect = element.getBoundingClientRect();
+    floatingMessage.style.position = 'fixed';
+    floatingMessage.style.left = rect.left + rect.width / 2 + 'px';
+    floatingMessage.style.top = rect.top - 10 + 'px';
+    floatingMessage.style.transform = 'translateX(-50%)';
+    
+    document.body.appendChild(floatingMessage);
+    
+    // 触发动画
+    setTimeout(() => {
+      floatingMessage.classList.add('show');
+    }, 10);
+    
+    // 清理
+    setTimeout(() => {
+      if (floatingMessage.parentNode) {
+        floatingMessage.remove();
+      }
+    }, 2000);
   }
 
   /**
@@ -511,11 +739,48 @@ class UIManager {
   }
 
   // 显示/隐藏错误消息
-  showError(elementId, message) {
+  showError(elementId, message, type = 'error', suggestions = []) {
     const errorElement = document.getElementById(elementId);
     if (errorElement) {
-      errorElement.textContent = message;
-      errorElement.classList.add('show');
+      // 清空现有内容
+      errorElement.innerHTML = '';
+      
+      // 创建错误图标
+      const errorIcon = document.createElement('span');
+      errorIcon.className = 'error-icon';
+      errorIcon.innerHTML = this.getErrorIcon(type);
+      
+      // 创建错误消息
+      const errorMessage = document.createElement('span');
+      errorMessage.className = 'error-message-text';
+      errorMessage.textContent = message;
+      
+      // 组装错误内容
+      errorElement.appendChild(errorIcon);
+      errorElement.appendChild(errorMessage);
+      
+      // 添加建议（如果有）
+      if (suggestions.length > 0) {
+        const suggestionsList = document.createElement('ul');
+        suggestionsList.className = 'error-suggestions';
+        
+        suggestions.forEach(suggestion => {
+          const suggestionItem = document.createElement('li');
+          suggestionItem.textContent = suggestion;
+          suggestionsList.appendChild(suggestionItem);
+        });
+        
+        errorElement.appendChild(suggestionsList);
+      }
+      
+      // 设置错误类型样式
+      errorElement.className = `error-message error-${type} show`;
+      
+      // 添加震动效果
+      errorElement.style.animation = 'errorShake 0.5s ease-in-out';
+      setTimeout(() => {
+        errorElement.style.animation = '';
+      }, 500);
     }
   }
 
@@ -523,15 +788,219 @@ class UIManager {
     const errorElement = document.getElementById(elementId);
     if (errorElement) {
       errorElement.classList.remove('show');
-      errorElement.textContent = '';
+      errorElement.innerHTML = '';
+      errorElement.className = 'error-message';
     }
+  }
+
+  /**
+   * 获取错误图标
+   * @param {string} type - 错误类型
+   * @returns {string}
+   */
+  getErrorIcon(type) {
+    const icons = {
+      error: '❌',
+      warning: '⚠️',
+      info: 'ℹ️',
+      validation: '📝'
+    };
+    return icons[type] || icons.error;
+  }
+
+  /**
+   * 显示增强的错误通知
+   * @param {string} title - 错误标题
+   * @param {string} message - 错误消息
+   * @param {Array} suggestions - 解决建议
+   * @param {string} type - 错误类型
+   */
+  showEnhancedError(title, message, suggestions = [], type = 'error') {
+    const errorNotification = document.createElement('div');
+    errorNotification.className = `enhanced-error-notification enhanced-error-${type}`;
+    
+    errorNotification.innerHTML = `
+      <div class="enhanced-error-header">
+        <span class="enhanced-error-icon">${this.getErrorIcon(type)}</span>
+        <span class="enhanced-error-title">${title}</span>
+        <button class="enhanced-error-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+      </div>
+      <div class="enhanced-error-body">
+        <p class="enhanced-error-message">${message}</p>
+        ${suggestions.length > 0 ? `
+          <div class="enhanced-error-suggestions">
+            <p class="suggestions-title">💡 解决建议：</p>
+            <ul>
+              ${suggestions.map(suggestion => `<li>${suggestion}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+      </div>
+    `;
+    
+    // 添加到页面
+    document.body.appendChild(errorNotification);
+    
+    // 触发显示动画
+    setTimeout(() => {
+      errorNotification.classList.add('show');
+    }, 10);
+    
+    // 自动关闭（错误类型不自动关闭）
+    if (type !== 'error') {
+      setTimeout(() => {
+        if (errorNotification.parentNode) {
+          errorNotification.classList.remove('show');
+          setTimeout(() => errorNotification.remove(), 300);
+        }
+      }, 8000);
+    }
+    
+    return errorNotification;
+  }
+
+  /**
+   * 显示表单验证错误
+   * @param {HTMLFormElement} form - 表单元素
+   * @param {Object} errors - 错误对象
+   */
+  showFormValidationErrors(form, errors) {
+    if (!form || !errors) return;
+    
+    // 清除现有错误
+    const errorElements = form.querySelectorAll('.field-error');
+    errorElements.forEach(el => el.remove());
+    
+    // 移除错误样式
+    const inputs = form.querySelectorAll('.form-input');
+    inputs.forEach(input => input.classList.remove('input-error'));
+    
+    // 显示新错误
+    Object.keys(errors).forEach(fieldName => {
+      const field = form.querySelector(`[name="${fieldName}"], #${fieldName}`);
+      const error = errors[fieldName];
+      
+      if (field && error) {
+        // 添加错误样式
+        field.classList.add('input-error');
+        
+        // 创建错误提示
+        const errorElement = document.createElement('div');
+        errorElement.className = 'field-error';
+        errorElement.innerHTML = `
+          <span class="field-error-icon">⚠️</span>
+          <span class="field-error-text">${error}</span>
+        `;
+        
+        // 插入错误提示
+        field.parentNode.insertBefore(errorElement, field.nextSibling);
+        
+        // 添加震动效果
+        field.style.animation = 'inputErrorShake 0.3s ease-in-out';
+        setTimeout(() => {
+          field.style.animation = '';
+        }, 300);
+      }
+    });
+  }
+
+  /**
+   * 显示网络错误
+   * @param {Error} error - 错误对象
+   */
+  showNetworkError(error) {
+    let title = '网络错误';
+    let message = '请检查您的网络连接';
+    let suggestions = [
+      '检查网络连接是否正常',
+      '尝试刷新页面',
+      '稍后再试'
+    ];
+    
+    if (!navigator.onLine) {
+      title = '网络连接断开';
+      message = '您的设备似乎已断开网络连接';
+      suggestions = [
+        '检查WiFi或移动数据连接',
+        '确认网络设置正确',
+        '连接网络后刷新页面'
+      ];
+    } else if (error.message.includes('timeout')) {
+      title = '请求超时';
+      message = '服务器响应时间过长';
+      suggestions = [
+        '检查网络连接速度',
+        '稍后重试',
+        '联系技术支持'
+      ];
+    }
+    
+    this.showEnhancedError(title, message, suggestions, 'error');
+  }
+
+  /**
+   * 显示认证错误
+   * @param {Error} error - 错误对象
+   */
+  showAuthError(error) {
+    const authErrorMap = {
+      'Invalid login credentials': {
+        title: '登录失败',
+        message: '邮箱或密码不正确',
+        suggestions: [
+          '检查邮箱地址是否正确',
+          '确认密码是否正确',
+          '尝试重置密码'
+        ]
+      },
+      'User already registered': {
+        title: '注册失败',
+        message: '该邮箱已被注册',
+        suggestions: [
+          '使用其他邮箱地址',
+          '尝试登录现有账号',
+          '使用忘记密码功能'
+        ]
+      },
+      'Email not confirmed': {
+        title: '邮箱未验证',
+        message: '请先验证您的邮箱地址',
+        suggestions: [
+          '检查邮箱收件箱',
+          '查看垃圾邮件文件夹',
+          '重新发送验证邮件'
+        ]
+      },
+      'Password should be at least 6 characters': {
+        title: '密码格式错误',
+        message: '密码长度至少需要6个字符',
+        suggestions: [
+          '使用至少6个字符的密码',
+          '包含字母和数字',
+          '避免使用过于简单的密码'
+        ]
+      }
+    };
+    
+    const errorInfo = authErrorMap[error.message] || {
+      title: '认证错误',
+      message: error.message || '认证过程中发生错误',
+      suggestions: [
+        '请稍后重试',
+        '检查输入信息',
+        '联系技术支持'
+      ]
+    };
+    
+    this.showEnhancedError(errorInfo.title, errorInfo.message, errorInfo.suggestions, 'error');
   }
 
   /**
    * 显示全局加载状态
    * @param {string} message - 加载消息
+   * @param {string} type - 加载类型 ('default', 'dots', 'pulse', 'bars')
    */
-  showLoading(message = '加载中...') {
+  showLoading(message = '加载中...', type = 'default') {
     this.loadingState = true;
     
     // 移除现有加载指示器
@@ -547,8 +1016,7 @@ class UIManager {
     loadingContent.className = 'loading-content';
 
     // 创建加载动画
-    const spinner = document.createElement('div');
-    spinner.className = 'loading-spinner';
+    const spinner = this.createLoadingSpinner(type);
 
     // 创建加载文本
     const loadingText = document.createElement('div');
@@ -567,6 +1035,47 @@ class UIManager {
     setTimeout(() => {
       loadingOverlay.classList.add('show');
     }, 10);
+  }
+
+  /**
+   * 创建不同类型的加载动画
+   * @param {string} type - 动画类型
+   * @returns {HTMLElement}
+   */
+  createLoadingSpinner(type = 'default') {
+    const container = document.createElement('div');
+    container.className = `loading-spinner loading-spinner-${type}`;
+
+    switch (type) {
+      case 'dots':
+        container.innerHTML = `
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+        `;
+        break;
+      
+      case 'pulse':
+        container.innerHTML = `
+          <div class="loading-pulse"></div>
+        `;
+        break;
+      
+      case 'bars':
+        container.innerHTML = `
+          <div class="loading-bar"></div>
+          <div class="loading-bar"></div>
+          <div class="loading-bar"></div>
+          <div class="loading-bar"></div>
+        `;
+        break;
+      
+      default:
+        // 保持原有的默认旋转动画
+        break;
+    }
+
+    return container;
   }
 
   /**
@@ -590,18 +1099,36 @@ class UIManager {
    * 显示按钮加载状态
    * @param {HTMLButtonElement} button - 按钮元素
    * @param {string} loadingText - 加载时显示的文本
+   * @param {string} spinnerType - 加载动画类型
    */
-  showButtonLoading(button, loadingText = '处理中...') {
+  showButtonLoading(button, loadingText = '处理中...', spinnerType = 'default') {
     if (!button) return;
 
     // 保存原始状态
     button.setAttribute('data-original-text', button.textContent);
     button.setAttribute('data-original-disabled', button.disabled);
+    button.setAttribute('data-original-html', button.innerHTML);
 
     // 设置加载状态
     button.disabled = true;
-    button.textContent = loadingText;
     button.classList.add('loading');
+
+    // 创建加载内容
+    const loadingContent = document.createElement('span');
+    loadingContent.className = 'button-loading-content';
+    
+    const spinner = document.createElement('span');
+    spinner.className = `button-loading-spinner button-loading-spinner-${spinnerType}`;
+    
+    const text = document.createElement('span');
+    text.className = 'button-loading-text';
+    text.textContent = loadingText;
+
+    loadingContent.appendChild(spinner);
+    loadingContent.appendChild(text);
+    
+    button.innerHTML = '';
+    button.appendChild(loadingContent);
   }
 
   /**
@@ -613,9 +1140,13 @@ class UIManager {
 
     // 恢复原始状态
     const originalText = button.getAttribute('data-original-text');
+    const originalHtml = button.getAttribute('data-original-html');
     const originalDisabled = button.getAttribute('data-original-disabled') === 'true';
 
-    if (originalText) {
+    if (originalHtml) {
+      button.innerHTML = originalHtml;
+      button.removeAttribute('data-original-html');
+    } else if (originalText) {
       button.textContent = originalText;
       button.removeAttribute('data-original-text');
     }
@@ -869,6 +1400,189 @@ class UIManager {
     const tooltip = document.getElementById('activeTooltip');
     if (tooltip) {
       tooltip.remove();
+    }
+  }
+
+  /**
+   * 显示数据加载指示器
+   * @param {HTMLElement} container - 容器元素
+   * @param {string} message - 加载消息
+   */
+  showDataLoading(container, message = '加载数据中...') {
+    if (!container) return;
+
+    // 创建加载指示器
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'data-loading-indicator';
+    loadingIndicator.innerHTML = `
+      <div class="data-loading-spinner"></div>
+      <div class="data-loading-text">${message}</div>
+    `;
+
+    // 隐藏原有内容
+    const originalContent = container.innerHTML;
+    container.setAttribute('data-original-content', originalContent);
+    container.innerHTML = '';
+    container.appendChild(loadingIndicator);
+    container.classList.add('data-loading');
+  }
+
+  /**
+   * 隐藏数据加载指示器
+   * @param {HTMLElement} container - 容器元素
+   */
+  hideDataLoading(container) {
+    if (!container) return;
+
+    const originalContent = container.getAttribute('data-original-content');
+    if (originalContent) {
+      container.innerHTML = originalContent;
+      container.removeAttribute('data-original-content');
+    }
+    container.classList.remove('data-loading');
+  }
+
+  /**
+   * 显示内联加载动画
+   * @param {HTMLElement} element - 目标元素
+   * @param {string} position - 位置 ('before', 'after', 'replace')
+   * @returns {HTMLElement} 加载元素
+   */
+  showInlineLoading(element, position = 'after') {
+    if (!element) return null;
+
+    const loadingElement = document.createElement('span');
+    loadingElement.className = 'inline-loading';
+    loadingElement.innerHTML = '<span class="inline-loading-spinner"></span>';
+
+    switch (position) {
+      case 'before':
+        element.parentNode.insertBefore(loadingElement, element);
+        break;
+      case 'after':
+        element.parentNode.insertBefore(loadingElement, element.nextSibling);
+        break;
+      case 'replace':
+        element.style.display = 'none';
+        element.parentNode.insertBefore(loadingElement, element.nextSibling);
+        break;
+    }
+
+    return loadingElement;
+  }
+
+  /**
+   * 隐藏内联加载动画
+   * @param {HTMLElement} loadingElement - 加载元素
+   * @param {HTMLElement} originalElement - 原始元素（用于replace模式）
+   */
+  hideInlineLoading(loadingElement, originalElement = null) {
+    if (loadingElement && loadingElement.parentNode) {
+      loadingElement.remove();
+    }
+    
+    if (originalElement) {
+      originalElement.style.display = '';
+    }
+  }
+
+  /**
+   * 显示卡片加载状态
+   * @param {HTMLElement} card - 卡片元素
+   */
+  showCardLoading(card) {
+    if (!card) return;
+
+    card.classList.add('card-loading');
+    
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.className = 'card-loading-overlay';
+    loadingOverlay.innerHTML = `
+      <div class="card-loading-spinner"></div>
+    `;
+
+    card.style.position = 'relative';
+    card.appendChild(loadingOverlay);
+  }
+
+  /**
+   * 隐藏卡片加载状态
+   * @param {HTMLElement} card - 卡片元素
+   */
+  hideCardLoading(card) {
+    if (!card) return;
+
+    card.classList.remove('card-loading');
+    const overlay = card.querySelector('.card-loading-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+  }
+
+  /**
+   * 显示进度条
+   * @param {number} progress - 进度百分比 (0-100)
+   * @param {string} message - 进度消息
+   */
+  showProgress(progress = 0, message = '处理中...') {
+    // 移除现有进度条
+    this.hideProgress();
+
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'progress-container';
+    progressContainer.id = 'globalProgressContainer';
+    progressContainer.innerHTML = `
+      <div class="progress-content">
+        <div class="progress-message">${message}</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: ${progress}%"></div>
+        </div>
+        <div class="progress-percentage">${Math.round(progress)}%</div>
+      </div>
+    `;
+
+    document.body.appendChild(progressContainer);
+    setTimeout(() => progressContainer.classList.add('show'), 10);
+  }
+
+  /**
+   * 更新进度条
+   * @param {number} progress - 进度百分比 (0-100)
+   * @param {string} message - 进度消息
+   */
+  updateProgress(progress, message = null) {
+    const container = document.getElementById('globalProgressContainer');
+    if (!container) return;
+
+    const progressBar = container.querySelector('.progress-bar');
+    const progressPercentage = container.querySelector('.progress-percentage');
+    const progressMessage = container.querySelector('.progress-message');
+
+    if (progressBar) {
+      progressBar.style.width = `${progress}%`;
+    }
+    
+    if (progressPercentage) {
+      progressPercentage.textContent = `${Math.round(progress)}%`;
+    }
+    
+    if (message && progressMessage) {
+      progressMessage.textContent = message;
+    }
+  }
+
+  /**
+   * 隐藏进度条
+   */
+  hideProgress() {
+    const container = document.getElementById('globalProgressContainer');
+    if (container) {
+      container.classList.remove('show');
+      setTimeout(() => {
+        if (container.parentNode) {
+          container.remove();
+        }
+      }, 300);
     }
   }
 

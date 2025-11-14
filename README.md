@@ -4,14 +4,16 @@
 
 ## 🌟 特点
 
-- 📱 响应式设计，支持各种设备
-- 🎨 简洁现代的界面风格
-- 🚀 纯静态页面，加载快速
-- 🔗 一键跳转到 AI 工具网站
-- 👤 用户注册和登录功能
-- ➕ 添加自定义 AI 工具
-- ✏️ 编辑和删除自己的工具
-- 🔍 搜索系统工具和自定义工具
+- 📱 **响应式设计** - 完美适配桌面、平板、手机等各种设备
+- 🎨 **现代界面** - 简洁美观的卡片式设计，支持深色模式
+- 🚀 **快速加载** - 纯静态页面，无需后端服务器，秒开体验
+- 🔗 **一键访问** - 直接跳转到 AI 工具官网，无需记忆复杂网址
+- 👤 **用户系统** - 安全的注册登录，数据云端同步
+- ➕ **自定义工具** - 添加你发现的优质 AI 工具，建立个人收藏
+- ✏️ **灵活管理** - 随时编辑、删除自己添加的工具
+- 🔍 **智能搜索** - 同时搜索系统预设和个人自定义工具
+- 🔒 **数据安全** - 基于 Supabase 的企业级安全保障
+- 🌐 **多语言支持** - 支持中文和英文工具标识
 
 ## 📂 项目结构
 
@@ -31,18 +33,34 @@
 └── README.md           # 项目说明
 ```
 
-## 🚀 使用方法
+## 🚀 快速开始
 
-### 基础使用
+### 🌐 在线使用
 
-1. 克隆项目到本地：
+直接访问 [AI 工具导航](https://your-domain.com) 即可开始使用，无需安装任何软件。
+
+### 💻 本地部署
+
+1. **克隆项目**
 ```bash
 git clone https://github.com/你的用户名/ai-tools-nav.git
+cd ai-tools-nav
 ```
 
-2. 直接在浏览器中打开 `index.html` 即可使用
+2. **基础使用**
+```bash
+# 直接在浏览器中打开 index.html
+open index.html
 
-### 配置用户认证功能（可选）
+# 或使用本地服务器（推荐）
+python -m http.server 8000
+# 然后访问 http://localhost:8000
+```
+
+3. **启用完整功能**（可选）
+如需使用用户认证和自定义工具功能，请继续配置 Supabase。
+
+## ⚙️ 配置用户认证功能（可选）
 
 如需启用用户认证和自定义工具功能，请按照以下步骤设置 Supabase：
 
@@ -191,14 +209,42 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 - Supabase 的 anon key 是公开密钥，可以安全地暴露在前端代码中
 - 数据安全通过 Supabase 的 Row Level Security (RLS) 策略保证
 
+## 🏗️ 技术架构
+
+### 前端技术栈
+- **HTML5 + CSS3 + JavaScript (ES6+)** - 现代 Web 标准
+- **CSS Grid + Flexbox** - 响应式布局系统
+- **Supabase JavaScript SDK** - 实时数据库和认证
+- **原生 JavaScript** - 无框架依赖，轻量高效
+
+### 后端服务 (Supabase)
+- **PostgreSQL** - 企业级关系型数据库
+- **Row Level Security (RLS)** - 数据安全保障
+- **实时 API** - 自动生成的 RESTful 接口
+- **用户认证** - JWT 令牌安全认证
+
+### 部署架构
+- **Vercel** - 全球 CDN 加速，秒级部署
+- **GitHub** - 版本控制和持续集成
+- **自定义域名** - 支持 HTTPS 和 SSL 证书
+
+### 核心特性
+- ⚡ **零配置启动** - 下载即用，无需复杂配置
+- 🔄 **实时同步** - 多设备数据自动同步
+- 🛡️ **安全可靠** - 企业级安全标准
+- 📱 **PWA 就绪** - 支持离线使用和桌面安装
+- 🎯 **SEO 友好** - 搜索引擎优化
+
 ## 📦 工具分类
 
-- 💬 AI 对话助手
-- 🎨 AI 绘画
-- 🎬 AI 视频
-- ✍️ AI 写作
-- 💻 AI 编程
-- 🎵 AI 音频
+- 💬 **AI 对话助手** - ChatGPT、Claude、文心一言等智能对话工具
+- 🎨 **AI 绘画** - Midjourney、DALL-E、Stable Diffusion 等图像生成工具
+- 🎬 **AI 视频** - Runway、Pika Labs、剪映等视频创作工具
+- ✍️ **AI 写作** - Jasper、Copy.ai、秘塔写作猫等文本创作工具
+- 💻 **AI 编程** - GitHub Copilot、Cursor、通义灵码等代码助手
+- 🎵 **AI 音频** - Suno、Udio、剪映等音频生成和处理工具
+
+每个分类都支持添加自定义工具，让你的工具库更加个性化和完整。
 
 ## 🔧 自定义
 
@@ -254,27 +300,88 @@ MIT License
 3. 参考 `SUPABASE_SETUP_GUIDE.md` 详细设置步骤
 4. 提交 Issue 并附上错误信息
 
-## 📚 相关文档
+## 📚 详细文档
 
-- [Supabase 设置指南](SUPABASE_SETUP_GUIDE.md)
-- [认证功能使用指南](AUTH_USAGE_GUIDE.md)
-- [响应式测试指南](RESPONSIVE_TESTING_GUIDE.md)
+- 📖 [Supabase 设置指南](SUPABASE_SETUP_GUIDE.md) - 详细的后端配置步骤
+- 🔐 [认证功能使用指南](AUTH_USAGE_GUIDE.md) - 用户系统开发文档
+- 📱 [响应式测试指南](RESPONSIVE_TESTING_GUIDE.md) - 多设备兼容性测试
+- 🚀 [Vercel 部署指南](VERCEL_DEPLOYMENT_GUIDE.md) - 一键部署到云端
+- 🌐 [域名设置指南](DOMAIN_SETUP_GUIDE.md) - 自定义域名配置
+- ✅ [部署测试清单](DEPLOYMENT_TEST_CHECKLIST.md) - 上线前检查项目
 
-## 🤝 贡献
+## 🤝 贡献指南
 
-欢迎提交 Issue 和 Pull Request！
+我们欢迎所有形式的贡献！无论是新功能、Bug 修复、文档改进还是工具推荐。
 
-### 贡献指南
+### 🚀 如何贡献
 
-1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+1. **Fork 项目**
+```bash
+# Fork 本仓库到你的 GitHub 账号
+# 然后克隆你的 Fork
+git clone https://github.com/你的用户名/ai-tools-nav.git
+```
 
-### 开发规范
+2. **创建功能分支**
+```bash
+git checkout -b feature/amazing-feature
+# 或
+git checkout -b fix/bug-description
+```
 
-- 保持代码简洁易读
-- 添加必要的注释
-- 确保响应式设计兼容性
-- 测试所有功能正常工作
+3. **开发和测试**
+```bash
+# 进行你的修改
+# 运行测试确保功能正常
+python -m http.server 8000
+```
+
+4. **提交更改**
+```bash
+git add .
+git commit -m "feat: 添加新的 AI 工具分类"
+# 或
+git commit -m "fix: 修复移动端布局问题"
+```
+
+5. **推送并创建 PR**
+```bash
+git push origin feature/amazing-feature
+# 然后在 GitHub 上创建 Pull Request
+```
+
+### 📋 开发规范
+
+- **代码风格**: 保持代码简洁易读，遵循现有代码风格
+- **注释规范**: 为复杂逻辑添加清晰的中文注释
+- **响应式设计**: 确保新功能在所有设备上正常工作
+- **测试要求**: 使用 `test-responsive.html` 测试响应式布局
+- **文档更新**: 重要功能需要更新相关文档
+
+### 🎯 贡献类型
+
+- **🐛 Bug 修复**: 修复现有功能问题
+- **✨ 新功能**: 添加新的功能特性
+- **📝 文档**: 改进文档和使用指南
+- **🎨 UI/UX**: 改进界面设计和用户体验
+- **⚡ 性能**: 优化加载速度和响应性能
+- **🔧 工具**: 改进开发和测试工具
+- **🌐 国际化**: 添加多语言支持
+
+### 💡 工具推荐
+
+如果你发现了优质的 AI 工具，欢迎通过以下方式推荐：
+
+1. **GitHub Issue**: 创建 "工具推荐" Issue
+2. **Pull Request**: 直接修改 `index.html` 添加工具
+3. **在线提交**: 使用网站的"添加工具"功能
+
+**推荐格式**:
+```
+工具名称: ChatGPT
+工具网址: https://chat.openai.com
+工具描述: OpenAI 开发的强大对话 AI
+分类: AI 对话助手
+是否免费: 部分免费
+是否中文: 支持中文
+```

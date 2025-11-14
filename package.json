@@ -6,6 +6,8 @@
   "scripts": {
     "build": "node build.js",
     "test-deployment": "node test-deployment.js",
+    "test-ssl": "node test-ssl-domain.js",
+    "monitor-ssl": "node ssl-monitor.js",
     "start": "python -m http.server 8000",
     "dev": "python -m http.server 8000"
   },

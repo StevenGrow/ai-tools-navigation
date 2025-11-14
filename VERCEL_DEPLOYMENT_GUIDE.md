@@ -205,4 +205,95 @@ Vercel 默认会监听您的 GitHub 仓库：
 3. 配置 CDN 和缓存策略
 4. 监控网站性能和错误
 
-恭喜！您的 AI 工具导航网站现在已经成功部署到 Vercel 了！
+恭喜！您的 AI 工具导航网站现在已经成功部署到 Vercel 了！#
+# 步骤 7: 配置自定义域名（可选）
+
+如果您想使用自定义域名而不是 Vercel 提供的默认域名，请参考 [域名配置指南](./DOMAIN_SETUP_GUIDE.md)。
+
+### 7.1 快速域名配置步骤
+
+1. **购买域名**: 从域名注册商购买域名
+2. **添加到 Vercel**: 在项目设置中添加自定义域名
+3. **配置 DNS**: 在域名注册商处配置 DNS 记录
+4. **等待生效**: DNS 传播通常需要 24-48 小时
+5. **验证 SSL**: Vercel 自动为自定义域名提供 SSL 证书
+
+### 7.2 域名配置验证
+
+使用我们提供的测试脚本验证域名配置：
+
+```bash
+# 测试域名和 SSL 配置
+npm run test-ssl yourdomain.com
+
+# 监控 SSL 证书状态
+npm run monitor-ssl yourdomain.com
+```
+
+详细的域名配置步骤请参考 [DOMAIN_SETUP_GUIDE.md](./DOMAIN_SETUP_GUIDE.md)。
+
+## 步骤 8: 安全配置
+
+### 8.1 安全头配置
+
+项目已包含 `vercel.json` 配置文件，自动启用以下安全头：
+
+- **Strict-Transport-Security**: 强制 HTTPS 连接
+- **X-Content-Type-Options**: 防止 MIME 类型嗅探攻击
+- **X-Frame-Options**: 防止点击劫持攻击
+- **X-XSS-Protection**: 启用 XSS 过滤器
+- **Referrer-Policy**: 控制 Referrer 信息泄露
+- **Content-Security-Policy**: 防止代码注入攻击
+
+### 8.2 HTTPS 重定向
+
+`vercel.json` 配置文件已包含自动 HTTPS 重定向规则，所有 HTTP 请求都会自动重定向到 HTTPS。
+
+### 8.3 环境变量安全
+
+- 敏感信息（如 Supabase 密钥）通过环境变量配置
+- 不要在代码中硬编码任何密钥或敏感信息
+- 定期轮换 API 密钥
+
+## 监控和维护
+
+### 性能监控
+
+1. **Vercel Analytics**: 在项目设置中启用 Analytics
+2. **Core Web Vitals**: 监控页面性能指标
+3. **Error Tracking**: 监控 JavaScript 错误
+
+### SSL 证书监控
+
+使用提供的监控脚本定期检查 SSL 证书状态：
+
+```bash
+# 检查单个域名
+npm run monitor-ssl yourdomain.com
+
+# 批量检查多个域名
+node ssl-monitor.js --batch yourdomain.com,www.yourdomain.com
+```
+
+### 自动化监控
+
+可以设置 GitHub Actions 或其他 CI/CD 工具定期运行监控脚本：
+
+```yaml
+# .github/workflows/ssl-monitor.yml
+name: SSL Certificate Monitor
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # 每周一上午9点检查
+  workflow_dispatch:
+
+jobs:
+  ssl-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm run monitor-ssl yourdomain.com
+```

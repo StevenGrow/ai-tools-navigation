@@ -9,12 +9,21 @@ const fs = require('fs');
 const path = require('path');
 
 // 获取环境变量
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://yjlzpvkypgtfkfzauhtb.supabase.co';
-const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqbHpwdmt5cGd0ZmtmemF1aHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5MzQxNTksImV4cCI6MjA3ODUxMDE1OX0.uQxHfJwRirsaIiw8m2dXbU0IkpH1rRaxkt1BCTUKBhY';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
-console.log('🔧 开始构建过程...');
-console.log('📍 Supabase URL:', SUPABASE_URL);
-console.log('🔑 Supabase Key:', SUPABASE_ANON_KEY ? '已设置' : '未设置');
+// 验证环境变量
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error('❌ 错误: 缺少必要的环境变量');
+    console.error('请确保设置了以下环境变量:');
+    console.error('- VITE_SUPABASE_URL');
+    console.error('- VITE_SUPABASE_ANON_KEY');
+    process.exit(1);
+}
+
+console.log('开始构建过程...');
+console.log('Supabase URL:', SUPABASE_URL);
+console.log('Supabase Key:', SUPABASE_ANON_KEY ? '已设置' : '未设置');
 
 // 读取 index.html 文件
 const indexPath = path.join(__dirname, 'index.html');
@@ -37,9 +46,9 @@ if (!hasUrlMeta || !hasKeyMeta) {
     // 写回文件
     fs.writeFileSync(indexPath, htmlContent);
     
-    console.log('✅ 环境变量已注入到 HTML 文件');
+    console.log('环境变量已注入到 HTML 文件');
 } else {
-    console.log('ℹ️  环境变量 meta 标签已存在，跳过注入');
+    console.log('环境变量 meta 标签已存在，跳过注入');
 }
 
-console.log('🎉 构建完成！');
+console.log('构建完成！');
