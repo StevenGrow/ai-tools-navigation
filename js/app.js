@@ -22,7 +22,7 @@ class App {
     
     // 绑定方法上下文
     this.handleAuthStateChange = this.handleAuthStateChange.bind(this);
-    this.handleSearchInput = this.handleSearchInput.bind(this);
+    this.handleSearch = this.handleSearch.bind(this);
     this.handleAddToolSubmit = this.handleAddToolSubmit.bind(this);
     this.handleEditToolSubmit = this.handleEditToolSubmit.bind(this);
     this.handleDeleteToolConfirm = this.handleDeleteToolConfirm.bind(this);

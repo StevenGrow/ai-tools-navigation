@@ -114,6 +114,29 @@ document.querySelectorAll('.nav-item').forEach(item => {
 
 // 页面加载完成后初始化应用
 document.addEventListener('DOMContentLoaded', async function() {
+    // 等待应用实例创建
+    let attempts = 0;
+    const maxAttempts = 50; // 最多等待 5 秒
+    
+    const waitForApp = () => {
+        return new Promise((resolve) => {
+            const checkApp = () => {
+                attempts++;
+                if (window.app) {
+                    resolve();
+                } else if (attempts >= maxAttempts) {
+                    console.error('应用实例创建超时');
+                    resolve();
+                } else {
+                    setTimeout(checkApp, 100);
+                }
+            };
+            checkApp();
+        });
+    };
+    
+    await waitForApp();
+    
     // 初始化主应用
     if (window.app) {
         await window.app.init();
