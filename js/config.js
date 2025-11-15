@@ -11,9 +11,9 @@
 // 对于静态部署，我们需要在构建时替换这些值
 // 或者在部署后通过 Vercel 的环境变量功能注入
 
-// 默认配置（请在生产环境中替换为您的 Supabase 配置）
-const DEFAULT_SUPABASE_URL = 'your-project-url.supabase.co';
-const DEFAULT_SUPABASE_ANON_KEY = 'your-anon-key';
+// 生产环境配置（直接硬编码以确保正常工作）
+const DEFAULT_SUPABASE_URL = 'https://yjlzpvkypgtfkfzauhtb.supabase.co';
+const DEFAULT_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqbHpwdmt5cGd0ZmtmemF1aHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5MzQxNTksImV4cCI6MjA3ODUxMDE1OX0.uQxHfJwRirsaIiw8m2dXbU0IkpH1rRaxkt1BCTUKBhY';
 
 // 获取配置的函数
 function getSupabaseConfig() {
