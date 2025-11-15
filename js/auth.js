@@ -49,7 +49,7 @@ class AuthManager {
    * 用户登录
    * @param {string} email - 用户邮箱
    * @param {string} password - 用户密码
-   * @returns {Promise<{success: boolean, user?: object, error?: string}>}
+   * @returns {Promise<{success: boolean, user?: object, error?: string, errorType?: string}>}
    */
   async signIn(email, password) {
     try {
@@ -59,6 +59,16 @@ class AuthManager {
       });
 
       if (error) {
+        // 特殊处理邮箱未确认错误
+        if (error.message.includes('Email not confirmed')) {
+          return {
+            success: false,
+            error: this.translateAuthError(error.message),
+            errorType: 'email_not_confirmed',
+            email: email // 返回邮箱用于重发确认邮件
+          };
+        }
+        
         return {
           success: false,
           error: this.translateAuthError(error.message)

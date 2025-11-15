@@ -749,8 +749,16 @@ class App {
           e.target.reset();
         }, 800);
       } else {
-        // 登录失败 - 使用增强错误处理
-        this.uiManager.showAuthError(new Error(result.error));
+        // 登录失败 - 特殊处理邮箱确认错误
+        if (result.errorType === 'email_not_confirmed') {
+          // 关闭登录模态框
+          this.uiManager.hideLoginModal();
+          // 显示友好的邮箱确认弹窗
+          this.uiManager.showEmailConfirmationModal(result.email || email);
+        } else {
+          // 其他错误使用增强错误处理
+          this.uiManager.showAuthError(new Error(result.error), email);
+        }
       }
       
     } catch (error) {

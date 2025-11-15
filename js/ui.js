@@ -941,8 +941,9 @@ class UIManager {
   /**
    * 显示认证错误
    * @param {Error} error - 错误对象
+   * @param {string} userEmail - 用户邮箱（用于邮箱确认错误）
    */
-  showAuthError(error) {
+  showAuthError(error, userEmail = '') {
     const authErrorMap = {
       'Invalid login credentials': {
         title: '登录失败',
@@ -969,7 +970,8 @@ class UIManager {
           '检查邮箱收件箱',
           '查看垃圾邮件文件夹',
           '重新发送验证邮件'
-        ]
+        ],
+        special: 'email_confirmation'
       },
       'Password should be at least 6 characters': {
         title: '密码格式错误',
@@ -992,7 +994,264 @@ class UIManager {
       ]
     };
     
-    this.showEnhancedError(errorInfo.title, errorInfo.message, errorInfo.suggestions, 'error');
+    // 特殊处理邮箱确认错误
+    if (errorInfo.special === 'email_confirmation') {
+      this.showEmailConfirmationModal(userEmail);
+    } else {
+      this.showEnhancedError(errorInfo.title, errorInfo.message, errorInfo.suggestions, 'error');
+    }
+  }
+
+  /**
+   * 显示邮箱确认模态框
+   * @param {string} email - 用户邮箱
+   */
+  showEmailConfirmationModal(email = '') {
+    // 移除现有的邮箱确认模态框
+    const existingModal = document.getElementById('emailConfirmationModal');
+    if (existingModal) {
+      existingModal.remove();
+    }
+
+    // 创建邮箱确认模态框
+    const modal = document.createElement('div');
+    modal.className = 'modal email-confirmation-modal';
+    modal.id = 'emailConfirmationModal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="email-confirmation-icon">📧</div>
+          <h2>邮箱验证</h2>
+          <button class="modal-close" id="emailConfirmationClose">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="email-confirmation-content">
+            <p class="email-confirmation-message">
+              <strong>您的邮箱尚未验证</strong><br>
+              为了保护您的账户安全，请先验证您的邮箱地址。
+            </p>
+            
+            ${email ? `
+              <div class="email-display">
+                <span class="email-label">邮箱地址：</span>
+                <span class="email-address">${email}</span>
+              </div>
+            ` : ''}
+            
+            <div class="confirmation-steps">
+              <h4>📋 验证步骤：</h4>
+              <ol>
+                <li>检查您的邮箱收件箱</li>
+                <li>查找来自我们的验证邮件</li>
+                <li>点击邮件中的验证链接</li>
+                <li>返回此页面重新登录</li>
+              </ol>
+            </div>
+            
+            <div class="confirmation-tips">
+              <h4>💡 找不到邮件？</h4>
+              <ul>
+                <li>检查垃圾邮件文件夹</li>
+                <li>确认邮箱地址是否正确</li>
+                <li>等待几分钟后再检查</li>
+                <li>点击下方按钮重新发送</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="emailConfirmationCancel">稍后验证</button>
+          ${email ? `
+            <button class="btn btn-primary" id="resendConfirmationBtn" data-email="${email}">
+              <span class="btn-icon">📤</span>
+              重新发送验证邮件
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+
+    // 添加到页面
+    document.body.appendChild(modal);
+
+    // 绑定事件
+    this.bindEmailConfirmationEvents(modal, email);
+
+    // 显示模态框
+    setTimeout(() => modal.classList.add('show'), 10);
+
+    return modal;
+  }
+
+  /**
+   * 绑定邮箱确认模态框事件
+   * @param {HTMLElement} modal - 模态框元素
+   * @param {string} email - 用户邮箱
+   */
+  bindEmailConfirmationEvents(modal, email) {
+    const closeBtn = modal.querySelector('#emailConfirmationClose');
+    const cancelBtn = modal.querySelector('#emailConfirmationCancel');
+    const resendBtn = modal.querySelector('#resendConfirmationBtn');
+
+    // 关闭模态框
+    const closeModal = () => {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        if (modal.parentNode) {
+          modal.remove();
+        }
+      }, 300);
+    };
+
+    // 绑定关闭事件
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeModal);
+    }
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', closeModal);
+    }
+
+    // 点击背景关闭
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // ESC 键关闭
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        document.removeEventListener('keydown', handleEscape);
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+
+    // 重新发送验证邮件
+    if (resendBtn && email) {
+      resendBtn.addEventListener('click', async () => {
+        await this.handleResendConfirmation(resendBtn, email);
+      });
+    }
+  }
+
+  /**
+   * 处理重新发送确认邮件
+   * @param {HTMLButtonElement} button - 按钮元素
+   * @param {string} email - 用户邮箱
+   */
+  async handleResendConfirmation(button, email) {
+    if (!window.supabaseClient || !email) {
+      this.showNotification('配置错误，无法发送邮件', 'error');
+      return;
+    }
+
+    // 显示按钮加载状态
+    this.showButtonLoading(button, '发送中...');
+
+    try {
+      const { data, error } = await window.supabaseClient.auth.resend({
+        type: 'signup',
+        email: email
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // 发送成功
+      this.hideButtonLoading(button);
+      this.showNotification(
+        `验证邮件已发送到 ${email}`,
+        'success',
+        5000,
+        {
+          subtitle: '请检查您的邮箱（包括垃圾邮件文件夹）'
+        }
+      );
+
+      // 更新按钮状态
+      button.innerHTML = `
+        <span class="btn-icon">✅</span>
+        邮件已发送
+      `;
+      button.disabled = true;
+
+      // 5秒后恢复按钮
+      setTimeout(() => {
+        button.innerHTML = `
+          <span class="btn-icon">📤</span>
+          重新发送验证邮件
+        `;
+        button.disabled = false;
+      }, 5000);
+
+    } catch (error) {
+      console.error('重新发送确认邮件失败:', error);
+      this.hideButtonLoading(button);
+      
+      let errorMessage = '发送失败，请稍后重试';
+      if (error.message.includes('rate limit')) {
+        errorMessage = '发送过于频繁，请稍后再试';
+      } else if (error.message.includes('invalid email')) {
+        errorMessage = '邮箱地址无效';
+      }
+      
+      this.showNotification(errorMessage, 'error');
+    }
+  }
+
+  /**
+   * 显示邮箱确认成功提示
+   * @param {string} email - 用户邮箱
+   */
+  showEmailConfirmationSuccess(email) {
+    this.showNotification(
+      '邮箱验证成功！',
+      'success',
+      4000,
+      {
+        subtitle: `${email} 已成功验证`,
+        celebrate: true,
+        animation: 'bounce'
+      }
+    );
+  }
+
+  /**
+   * 检查并处理邮箱确认状态
+   * @param {object} user - 用户对象
+   * @returns {boolean} 是否已确认
+   */
+  checkEmailConfirmationStatus(user) {
+    if (!user) return false;
+    
+    const isConfirmed = user.email_confirmed_at !== null;
+    
+    if (!isConfirmed) {
+      // 显示友好的提示而不是错误
+      this.showNotification(
+        '请验证您的邮箱后再登录',
+        'warning',
+        0, // 不自动关闭
+        {
+          subtitle: '点击通知查看详细说明'
+        }
+      );
+      
+      // 点击通知显示详细模态框
+      const notification = document.querySelector('.notification');
+      if (notification) {
+        notification.style.cursor = 'pointer';
+        notification.addEventListener('click', () => {
+          this.hideNotification();
+          this.showEmailConfirmationModal(user.email);
+        });
+      }
+    }
+    
+    return isConfirmed;
   }
 
   /**
