@@ -26,11 +26,25 @@
     </div>
     
     <div class="debug-section">
+        <h3>测试注册</h3>
+        <input type="email" id="registerEmail" placeholder="邮箱">
+        <input type="password" id="registerPassword" placeholder="密码">
+        <button onclick="testRegister()">测试注册</button>
+        <div id="registerResult"></div>
+    </div>
+    
+    <div class="debug-section">
         <h3>测试登录</h3>
         <input type="email" id="testEmail" placeholder="邮箱">
         <input type="password" id="testPassword" placeholder="密码">
         <button onclick="testLogin()">测试登录</button>
         <div id="loginResult"></div>
+        
+        <h4>邮箱未确认解决方案</h4>
+        <p class="warning">如果遇到 "Email not confirmed" 错误，可以尝试以下方法：</p>
+        <button onclick="resendConfirmation()">重新发送确认邮件</button>
+        <button onclick="forceLogin()">强制登录（仅测试用）</button>
+        <div id="confirmationResult"></div>
     </div>
     
     <div class="debug-section">
@@ -105,6 +119,43 @@
             configDiv.innerHTML = html;
         }
         
+        // 测试注册
+        async function testRegister() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const resultDiv = document.getElementById('registerResult');
+            
+            if (!email || !password) {
+                resultDiv.innerHTML = '<p class="warning">请输入邮箱和密码</p>';
+                return;
+            }
+            
+            try {
+                resultDiv.innerHTML = '<p>正在测试注册...</p>';
+                
+                const { data, error } = await window.supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error) {
+                    resultDiv.innerHTML = `<p class="error">❌ 注册失败: ${error.message}</p>`;
+                    console.error('注册错误详情:', error);
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ 注册成功!</p>
+                        <p>用户: ${data.user.email}</p>
+                        <p>邮箱确认状态: ${data.user.email_confirmed_at ? '已确认' : '未确认'}</p>
+                        <p class="warning">如果邮箱未确认，请检查邮箱或使用下面的功能</p>
+                    `;
+                    console.log('注册成功:', data);
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<p class="error">❌ 网络错误: ${err.message}</p>`;
+                console.error('网络错误:', err);
+            }
+        }
+        
         // 测试登录
         async function testLogin() {
             const email = document.getElementById('testEmail').value;
@@ -125,7 +176,22 @@
                 });
                 
                 if (error) {
-                    resultDiv.innerHTML = `<p class="error">❌ 登录失败: ${error.message}</p>`;
+                    let errorMsg = `<p class="error">❌ 登录失败: ${error.message}</p>`;
+                    
+                    // 特殊处理邮箱未确认错误
+                    if (error.message.includes('Email not confirmed')) {
+                        errorMsg += `
+                            <p class="warning">⚠️ 邮箱未确认</p>
+                            <p>解决方案：</p>
+                            <ul>
+                                <li>检查邮箱中的确认邮件</li>
+                                <li>点击下面的"重新发送确认邮件"按钮</li>
+                                <li>或使用"强制登录"进行测试</li>
+                            </ul>
+                        `;
+                    }
+                    
+                    resultDiv.innerHTML = errorMsg;
                     console.error('登录错误详情:', error);
                 } else {
                     resultDiv.innerHTML = `<p class="success">✅ 登录成功! 用户: ${data.user.email}</p>`;
@@ -134,6 +200,87 @@
             } catch (err) {
                 resultDiv.innerHTML = `<p class="error">❌ 网络错误: ${err.message}</p>`;
                 console.error('网络错误:', err);
+            }
+        }
+        
+        // 重新发送确认邮件
+        async function resendConfirmation() {
+            const email = document.getElementById('testEmail').value;
+            const resultDiv = document.getElementById('confirmationResult');
+            
+            if (!email) {
+                resultDiv.innerHTML = '<p class="warning">请先输入邮箱地址</p>';
+                return;
+            }
+            
+            try {
+                resultDiv.innerHTML = '<p>正在发送确认邮件...</p>';
+                
+                const { data, error } = await window.supabaseClient.auth.resend({
+                    type: 'signup',
+                    email: email
+                });
+                
+                if (error) {
+                    resultDiv.innerHTML = `<p class="error">❌ 发送失败: ${error.message}</p>`;
+                    console.error('发送确认邮件错误:', error);
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ 确认邮件已发送到 ${email}</p>
+                        <p>请检查邮箱（包括垃圾邮件文件夹）并点击确认链接</p>
+                    `;
+                    console.log('确认邮件发送成功:', data);
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<p class="error">❌ 网络错误: ${err.message}</p>`;
+                console.error('网络错误:', err);
+            }
+        }
+        
+        // 强制登录（仅用于测试，绕过邮箱确认）
+        async function forceLogin() {
+            const email = document.getElementById('testEmail').value;
+            const password = document.getElementById('testPassword').value;
+            const resultDiv = document.getElementById('confirmationResult');
+            
+            if (!email || !password) {
+                resultDiv.innerHTML = '<p class="warning">请输入邮箱和密码</p>';
+                return;
+            }
+            
+            try {
+                resultDiv.innerHTML = '<p>正在尝试强制登录...</p>';
+                
+                // 首先尝试使用管理员权限更新用户邮箱确认状态
+                // 注意：这需要在 Supabase 后台配置相应的 RPC 函数
+                
+                // 方法1：尝试直接登录（某些情况下可能成功）
+                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error && error.message.includes('Email not confirmed')) {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ 强制登录失败</p>
+                        <p class="warning">需要在 Supabase 后台禁用邮箱确认要求</p>
+                        <p>解决方案：</p>
+                        <ol>
+                            <li>登录 Supabase 控制台</li>
+                            <li>进入 Authentication > Settings</li>
+                            <li>关闭 "Enable email confirmations"</li>
+                            <li>或者手动确认用户邮箱</li>
+                        </ol>
+                    `;
+                } else if (error) {
+                    resultDiv.innerHTML = `<p class="error">❌ 强制登录失败: ${error.message}</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p class="success">✅ 强制登录成功! 用户: ${data.user.email}</p>`;
+                }
+                
+            } catch (err) {
+                resultDiv.innerHTML = `<p class="error">❌ 网络错误: ${err.message}</p>`;
+                console.error('强制登录错误:', err);
             }
         }
         
