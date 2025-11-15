@@ -25,30 +25,45 @@ console.log('开始构建过程...');
 console.log('Supabase URL:', SUPABASE_URL);
 console.log('Supabase Key:', SUPABASE_ANON_KEY ? '已设置' : '未设置');
 
-// 读取 index.html 文件
-const indexPath = path.join(__dirname, 'index.html');
-let htmlContent = fs.readFileSync(indexPath, 'utf8');
+// 需要处理的 HTML 文件列表
+const htmlFiles = ['index.html', 'debug-auth.html'];
 
-// 检查是否已经有环境变量 meta 标签
-const hasUrlMeta = htmlContent.includes('name="supabase-url"');
-const hasKeyMeta = htmlContent.includes('name="supabase-key"');
-
-if (!hasUrlMeta || !hasKeyMeta) {
-    // 在 head 标签中注入环境变量 meta 标签
-    const metaTags = `
+// 处理每个 HTML 文件
+htmlFiles.forEach(filename => {
+    const filePath = path.join(__dirname, filename);
+    
+    // 检查文件是否存在
+    if (!fs.existsSync(filePath)) {
+        console.log(`跳过不存在的文件: ${filename}`);
+        return;
+    }
+    
+    console.log(`处理文件: ${filename}`);
+    
+    // 读取文件内容
+    let htmlContent = fs.readFileSync(filePath, 'utf8');
+    
+    // 检查是否已经有环境变量 meta 标签
+    const hasUrlMeta = htmlContent.includes('name="supabase-url"');
+    const hasKeyMeta = htmlContent.includes('name="supabase-key"');
+    
+    if (!hasUrlMeta || !hasKeyMeta) {
+        // 在 head 标签中注入环境变量 meta 标签
+        const metaTags = `
     <!-- Supabase 环境变量 (由构建脚本注入) -->
     <meta name="supabase-url" content="${SUPABASE_URL}">
     <meta name="supabase-key" content="${SUPABASE_ANON_KEY}">`;
-    
-    // 在 </head> 之前插入 meta 标签
-    htmlContent = htmlContent.replace('</head>', `${metaTags}\n</head>`);
-    
-    // 写回文件
-    fs.writeFileSync(indexPath, htmlContent);
-    
-    console.log('环境变量已注入到 HTML 文件');
-} else {
-    console.log('环境变量 meta 标签已存在，跳过注入');
-}
+        
+        // 在 </head> 之前插入 meta 标签
+        htmlContent = htmlContent.replace('</head>', `${metaTags}\n</head>`);
+        
+        // 写回文件
+        fs.writeFileSync(filePath, htmlContent);
+        
+        console.log(`环境变量已注入到 ${filename}`);
+    } else {
+        console.log(`${filename} 中的环境变量 meta 标签已存在，跳过注入`);
+    }
+});
 
 console.log('构建完成！');

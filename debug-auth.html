@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>认证调试页面</title>
+    <!-- Supabase 环境变量 -->
+    <meta name="supabase-url" content="https://yjlzpvkypgtfkfzauhtb.supabase.co">
+    <meta name="supabase-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqbHpwdmt5cGd0ZmtmemF1aHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5MzQxNTksImV4cCI6MjA3ODUxMDE1OX0.uQxHfJwRirsaIiw8m2dXbU0IkpH1rRaxkt1BCTUKBhY">
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
@@ -62,20 +65,36 @@
             html += `<p class="info">DOM 状态: ${document.readyState}</p>`;
             html += `<p class="info">Meta 标签总数: ${document.querySelectorAll('meta').length}</p>`;
             
-            if (urlMeta) {
-                html += `<p class="success">✅ Supabase URL: ${urlMeta.getAttribute('content')}</p>`;
+            // 检查配置来源
+            let configSource = '';
+            let supabaseUrl = '';
+            let supabaseKey = '';
+            
+            if (urlMeta && keyMeta) {
+                configSource = 'Meta 标签';
+                supabaseUrl = urlMeta.getAttribute('content');
+                supabaseKey = keyMeta.getAttribute('content');
+                html += `<p class="success">✅ Supabase URL (Meta): ${supabaseUrl}</p>`;
+                html += `<p class="success">✅ Supabase Key (Meta): ${supabaseKey.substring(0, 20)}...</p>`;
             } else {
-                html += `<p class="error">❌ Supabase URL meta 标签未找到</p>`;
-                // 列出所有 meta 标签用于调试
-                const allMetas = Array.from(document.querySelectorAll('meta')).map(m => m.getAttribute('name')).filter(Boolean);
-                html += `<p class="warning">现有 meta 标签: ${allMetas.join(', ')}</p>`;
+                configSource = '默认配置';
+                // 从 config.js 获取默认配置
+                if (window.supabaseClient && window.supabaseClient.supabaseUrl) {
+                    supabaseUrl = window.supabaseClient.supabaseUrl;
+                    supabaseKey = '已配置';
+                    html += `<p class="warning">⚠️ 使用默认配置</p>`;
+                    html += `<p class="success">✅ Supabase URL (默认): ${supabaseUrl}</p>`;
+                    html += `<p class="success">✅ Supabase Key (默认): 已配置</p>`;
+                } else {
+                    html += `<p class="error">❌ Supabase URL meta 标签未找到</p>`;
+                    html += `<p class="error">❌ Supabase Key meta 标签未找到</p>`;
+                    // 列出所有 meta 标签用于调试
+                    const allMetas = Array.from(document.querySelectorAll('meta')).map(m => m.getAttribute('name')).filter(Boolean);
+                    html += `<p class="warning">现有 meta 标签: ${allMetas.join(', ')}</p>`;
+                }
             }
             
-            if (keyMeta) {
-                html += `<p class="success">✅ Supabase Key: ${keyMeta.getAttribute('content').substring(0, 20)}...</p>`;
-            } else {
-                html += `<p class="error">❌ Supabase Key meta 标签未找到</p>`;
-            }
+            html += `<p class="info">配置来源: ${configSource}</p>`;
             
             if (window.supabaseClient) {
                 html += `<p class="success">✅ Supabase 客户端已初始化</p>`;
