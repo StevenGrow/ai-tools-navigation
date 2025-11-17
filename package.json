@@ -1,26 +1,61 @@
 {
   "name": "ai-tools-navigation",
-  "version": "1.0.0",
-  "description": "AI 工具导航网站 - 支持用户自定义工具",
-  "main": "index.html",
+  "version": "2.0.0",
+  "description": "精选的 AI 工具导航网站，支持用户认证和自定义工具管理",
+  "main": "public/index.html",
   "scripts": {
-    "build": "node build.js",
-    "test-deployment": "node test-deployment.js",
-    "test-ssl": "node test-ssl-domain.js",
-    "monitor-ssl": "node ssl-monitor.js",
-    "start": "python -m http.server 8000",
-    "dev": "python -m http.server 8000"
+    "build": "node scripts/build.js",
+    "dev": "python -m http.server 8000 --directory public",
+    "start": "python -m http.server 8000 --directory public",
+    "serve": "npx serve public",
+    "test": "node tests/integration/test-auth-functionality.js",
+    "test:responsive": "node tests/utils/run-responsive-tests.js",
+    "test:performance": "node tests/integration/test-performance.js",
+    "test:deployment": "node tests/integration/test-deployment.js",
+    "test:ssl": "node tests/utils/ssl-monitor.js",
+    "lint:css": "echo 'CSS linting not configured'",
+    "lint:js": "echo 'JS linting not configured'",
+    "clean": "rm -rf dist/ .cache/",
+    "docs": "echo 'Documentation available in docs/ directory'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/ai-tools-navigation.git"
   },
   "keywords": [
     "ai",
     "tools",
     "navigation",
     "supabase",
-    "javascript"
+    "javascript",
+    "frontend",
+    "web-app",
+    "responsive",
+    "pwa",
+    "user-authentication",
+    "custom-tools",
+    "search",
+    "modern-ui"
   ],
-  "author": "",
+  "author": "Your Name <your.email@example.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=14"
-  }
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "files": [
+    "public/",
+    "src/",
+    "scripts/",
+    "config/",
+    "docs/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ]
 }

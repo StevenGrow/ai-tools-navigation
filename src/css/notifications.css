@@ -1,0 +1,624 @@
+/* 通知和反馈样式文件 - 通知消息、加载状态等 */
+
+/* 通知基础样式 */
+.notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    max-width: 400px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 10000;
+    border-left: 4px solid #6366f1;
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification-success {
+    border-left-color: #10b981;
+}
+
+.notification-error {
+    border-left-color: #ef4444;
+}
+
+.notification-warning {
+    border-left-color: #f59e0b;
+}
+
+.notification-info {
+    border-left-color: #3b82f6;
+}
+
+.notification-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-message {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+.notification-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.notification-close:hover {
+    background: #f1f5f9;
+}
+
+/* 增强通知样式 */
+.notification-success-enhanced {
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+    border-left-color: #10b981;
+}
+
+.notification-success-enhanced .notification-icon {
+    color: #10b981;
+}
+
+.notification-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #10b981, #059669);
+    border-radius: 0 0 12px 12px;
+    width: 0;
+    transition: width 3s ease-out;
+}
+
+/* 庆祝效果 */
+.celebration-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.celebration-particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #fbbf24;
+    border-radius: 50%;
+    animation: celebrationFall linear forwards;
+}
+
+@keyframes celebrationFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* 增强错误通知 */
+.enhanced-error-notification {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    max-width: 450px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 10001;
+    overflow: hidden;
+}
+
+.enhanced-error-notification.show {
+    transform: translateX(0);
+}
+
+.enhanced-error-notification.enhanced-error-error {
+    border-left: 4px solid #ef4444;
+}
+
+.enhanced-error-notification.enhanced-error-warning {
+    border-left: 4px solid #f59e0b;
+}
+
+.enhanced-error-notification.enhanced-error-info {
+    border-left: 4px solid #3b82f6;
+}
+
+.enhanced-error-header {
+    background: #fef2f2;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid #fecaca;
+}
+
+.enhanced-error-notification.enhanced-error-warning .enhanced-error-header {
+    background: #fffbeb;
+    border-bottom-color: #fde68a;
+}
+
+.enhanced-error-notification.enhanced-error-info .enhanced-error-header {
+    background: #eff6ff;
+    border-bottom-color: #bfdbfe;
+}
+
+.enhanced-error-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.enhanced-error-title {
+    font-weight: 600;
+    color: #dc2626;
+    flex: 1;
+}
+
+.enhanced-error-notification.enhanced-error-warning .enhanced-error-title {
+    color: #d97706;
+}
+
+.enhanced-error-notification.enhanced-error-info .enhanced-error-title {
+    color: #2563eb;
+}
+
+.enhanced-error-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.enhanced-error-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.enhanced-error-body {
+    padding: 1.5rem;
+}
+
+.enhanced-error-message {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.enhanced-error-suggestions {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.suggestions-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.enhanced-error-suggestions ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    list-style: none;
+}
+
+.enhanced-error-suggestions li {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    position: relative;
+}
+
+.enhanced-error-suggestions li::before {
+    content: "→";
+    color: #6366f1;
+    font-weight: bold;
+    position: absolute;
+    left: -1rem;
+}
+
+/* 全局加载状态 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.loading-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-content {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 300px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+.loading-spinner-dots {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.loading-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    animation: dotPulse 1.4s ease-in-out infinite both;
+}
+
+.loading-dot:nth-child(1) { animation-delay: -0.32s; }
+.loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes dotPulse {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.loading-spinner-pulse {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 1rem;
+}
+
+.loading-pulse {
+    width: 100%;
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+.loading-spinner-bars {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.loading-bar {
+    width: 4px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 2px;
+    animation: barScale 1.2s ease-in-out infinite;
+}
+
+.loading-bar:nth-child(1) { animation-delay: -1.1s; }
+.loading-bar:nth-child(2) { animation-delay: -1.0s; }
+.loading-bar:nth-child(3) { animation-delay: -0.9s; }
+.loading-bar:nth-child(4) { animation-delay: -0.8s; }
+
+@keyframes barScale {
+    0%, 40%, 100% {
+        transform: scaleY(0.4);
+    }
+    20% {
+        transform: scaleY(1);
+    }
+}
+
+.loading-text {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* 数据加载指示器 */
+.data-loading-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+.data-loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e2e8f0;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.data-loading-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* 内联加载动画 */
+.inline-loading {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.5rem;
+}
+
+.inline-loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e2e8f0;
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* 进度条 */
+.progress-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    min-width: 300px;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.progress-container.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.progress-content {
+    text-align: center;
+}
+
+.progress-message {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.progress-bar-container {
+    background: #e2e8f0;
+    border-radius: 8px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.progress-percentage {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* 工具提示 */
+.tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.tooltip.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltip-top::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+}
+
+.tooltip-bottom::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.9);
+}
+
+.tooltip-left::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translateY(-50%);
+    border: 4px solid transparent;
+    border-left-color: rgba(0, 0, 0, 0.9);
+}
+
+.tooltip-right::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    transform: translateY(-50%);
+    border: 4px solid transparent;
+    border-right-color: rgba(0, 0, 0, 0.9);
+}
+
+/* 浮动成功消息 */
+.floating-success-message {
+    position: fixed;
+    background: #10b981;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.floating-success-message.show {
+    opacity: 1;
+    transform: translateY(-20px);
+}
+
+/* 实时反馈 */
+.feedback-success {
+    position: relative;
+    background: #ecfdf5 !important;
+    border-color: #10b981 !important;
+}
+
+.feedback-error {
+    position: relative;
+    background: #fef2f2 !important;
+    border-color: #ef4444 !important;
+}
+
+.feedback-warning {
+    position: relative;
+    background: #fffbeb !important;
+    border-color: #f59e0b !important;
+}
+
+.feedback-icon {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.2rem;
+    animation: feedbackPulse 0.6s ease-out;
+}
+
+@keyframes feedbackPulse {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* 动画关键帧 */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

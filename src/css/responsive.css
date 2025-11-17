@@ -1,0 +1,509 @@
+/* 响应式样式文件 - 移动端和不同屏幕尺寸适配 */
+
+/* 平板端适配 (768px - 1024px) */
+@media (max-width: 1024px) {
+    .header-content {
+        max-width: 100%;
+    }
+    
+    .user-actions {
+        position: static;
+        margin-top: 1rem;
+        justify-content: center;
+    }
+    
+    header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .tools-grid {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.2rem;
+    }
+    
+    main {
+        padding: 1.5rem;
+    }
+}
+
+/* 移动端适配 (768px 及以下) */
+@media (max-width: 768px) {
+    header {
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .user-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .auth-btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    main {
+        padding: 1rem;
+    }
+    
+    .search-input {
+        font-size: 1rem;
+        padding: 0.9rem 1.2rem;
+    }
+    
+    .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .category-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* 移动端工具卡片优化 */
+    .tool-card {
+        padding: 1.2rem;
+        border-radius: 10px;
+    }
+    
+    .tool-name {
+        font-size: 1.1rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .tool-desc {
+        font-size: 0.85rem;
+    }
+    
+    .tool-actions {
+        margin-top: 0.8rem;
+        padding-top: 0.8rem;
+        opacity: 1; /* 移动端始终显示操作按钮 */
+    }
+    
+    .tool-action-btn {
+        padding: 0.5rem 0.8rem;
+        font-size: 1rem;
+        min-width: 44px; /* 触摸友好的最小尺寸 */
+        min-height: 44px;
+    }
+    
+    /* 工具卡片触摸反馈 */
+    .tool-card:active {
+        transform: scale(0.98);
+    }
+    
+    .custom-tool-card .tool-actions {
+        border-top-color: rgba(139, 92, 246, 0.2);
+    }
+    
+    /* 移动端按钮优化 */
+    .back-to-top {
+        bottom: 1rem;
+        right: 1rem;
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+    }
+    
+    .add-tool-btn {
+        bottom: 1rem;
+        left: 1rem;
+        width: 56px;
+        height: 56px;
+        font-size: 1.3rem;
+    }
+    
+    /* 移动端模态框优化 */
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        padding: 1.2rem 1.5rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .auth-form {
+        padding: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+    
+    .form-input {
+        padding: 0.9rem;
+        font-size: 1rem;
+    }
+    
+    .form-submit-btn {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    
+    .modal-close {
+        width: 40px;
+        height: 40px;
+        font-size: 1.8rem;
+    }
+    
+    /* 移动端错误消息 */
+    .error-message {
+        font-size: 0.9rem;
+        padding: 1rem;
+    }
+    
+    /* 移动端删除确认对话框 */
+    .delete-modal-actions {
+        flex-direction: column;
+    }
+    
+    .delete-modal-actions .btn {
+        width: 100%;
+    }
+    
+    /* 移动端搜索结果 */
+    .search-results-notification {
+        margin: 0.5rem;
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* 移动端确认对话框 */
+    .confirm-dialog .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .confirm-dialog .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .confirm-dialog .modal-footer {
+        flex-direction: column;
+        padding: 0 1.5rem 1.5rem;
+    }
+    
+    .confirm-dialog .btn {
+        width: 100%;
+    }
+}
+
+/* 小屏幕优化 (480px 及以下) */
+@media (max-width: 480px) {
+    header {
+        padding: 0.8rem;
+    }
+    
+    header h1 {
+        font-size: 1.6rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    main {
+        padding: 0.8rem;
+    }
+    
+    .search-input {
+        padding: 0.8rem 1rem;
+    }
+    
+    /* 小屏幕工具卡片优化 */
+    .tool-card {
+        padding: 1rem;
+    }
+    
+    .tool-name {
+        font-size: 1rem;
+    }
+    
+    .tool-desc {
+        font-size: 0.8rem;
+    }
+    
+    .tag {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.5rem;
+    }
+    
+    /* 小屏幕模态框优化 */
+    .modal-content {
+        width: 98%;
+        margin: 0.5rem;
+    }
+    
+    .modal-header {
+        padding: 1rem 1.2rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .auth-form {
+        padding: 1.2rem;
+    }
+    
+    .form-input {
+        padding: 0.8rem;
+    }
+    
+    .back-to-top,
+    .add-tool-btn {
+        bottom: 0.8rem;
+    }
+    
+    .back-to-top {
+        right: 0.8rem;
+    }
+    
+    .add-tool-btn {
+        left: 0.8rem;
+    }
+    
+    /* 删除确认模态框小屏幕优化 */
+    .delete-modal {
+        max-width: 95%;
+    }
+    
+    .delete-modal-body {
+        padding: 1.2rem;
+    }
+    
+    .delete-modal-body h3 {
+        font-size: 1.2rem;
+    }
+    
+    .delete-modal-body p {
+        font-size: 0.9rem;
+    }
+    
+    .tool-card {
+        margin-bottom: 0.5rem;
+    }
+    
+    .category-title {
+        font-size: 1.3rem;
+    }
+    
+    /* 小屏幕搜索优化 */
+    .search-container {
+        margin-bottom: 1rem;
+    }
+    
+    .search-box {
+        max-width: 100%;
+    }
+}
+
+/* 超小屏幕优化 (320px 及以下) */
+@media (max-width: 320px) {
+    header h1 {
+        font-size: 1.4rem;
+    }
+    
+    .subtitle {
+        font-size: 0.85rem;
+    }
+    
+    main {
+        padding: 0.5rem;
+    }
+    
+    .modal-content {
+        width: 100%;
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    .modal-header {
+        padding: 0.8rem 1rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .auth-form {
+        padding: 1rem;
+    }
+    
+    .tool-card {
+        padding: 0.8rem;
+        border-radius: 8px;
+    }
+    
+    .tool-name {
+        font-size: 0.95rem;
+    }
+    
+    .tool-desc {
+        font-size: 0.75rem;
+    }
+    
+    .back-to-top,
+    .add-tool-btn {
+        width: 44px;
+        height: 44px;
+        bottom: 0.5rem;
+    }
+    
+    .back-to-top {
+        right: 0.5rem;
+        font-size: 1rem;
+    }
+    
+    .add-tool-btn {
+        left: 0.5rem;
+        font-size: 1.2rem;
+    }
+    
+    .tool-card:hover {
+        transform: none; /* 禁用悬停效果 */
+    }
+    
+    .tool-card:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+}
+
+/* 横屏模式优化 */
+@media (max-height: 600px) and (orientation: landscape) {
+    .modal-content {
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header {
+        padding: 0.8rem 1.5rem;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .auth-form {
+        padding: 1rem 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    header {
+        padding: 1rem;
+    }
+    
+    header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* 高分辨率屏幕优化 */
+@media (min-width: 1400px) {
+    .tools-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+    
+    .tool-card {
+        padding: 2rem;
+    }
+    
+    .tool-name {
+        font-size: 1.3rem;
+    }
+    
+    .tool-desc {
+        font-size: 1rem;
+    }
+}
+
+/* 邮箱确认模态框响应式 */
+@media (max-width: 768px) {
+    .email-confirmation-modal .modal-content {
+        margin: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+    
+    .email-confirmation-modal .modal-header {
+        padding: 1.5rem;
+    }
+    
+    .email-confirmation-content {
+        padding: 1.5rem;
+    }
+    
+    .email-confirmation-modal .modal-footer {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+    }
+    
+    .email-confirmation-modal .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* 通知响应式 */
+@media (max-width: 768px) {
+    .notification {
+        top: 1rem;
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .modal,
+    .back-to-top,
+    .add-tool-btn,
+    .tool-actions,
+    .user-actions {
+        display: none !important;
+    }
+    
+    .tool-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+    
+    .tool-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}

@@ -26,7 +26,7 @@ console.log('Supabase URL:', SUPABASE_URL);
 console.log('Supabase Key:', SUPABASE_ANON_KEY ? '已设置' : '未设置');
 
 // 需要处理的 HTML 文件列表
-const htmlFiles = ['index.html', 'debug-auth.html'];
+const htmlFiles = ['public/index.html', 'public/debug-auth.html'];
 
 // 处理每个 HTML 文件
 htmlFiles.forEach(filename => {

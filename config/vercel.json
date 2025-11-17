@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "node build.js",
-  "outputDirectory": ".",
+  "buildCommand": "node scripts/build.js",
+  "outputDirectory": "public",
   "redirects": [
     {
       "source": "/(.*)",
