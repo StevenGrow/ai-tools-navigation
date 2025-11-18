@@ -333,6 +333,95 @@ class UIManager {
     }
   }
 
+  /**
+   * 更新管理员状态的UI
+   * @param {boolean} isAdmin - 是否是管理员
+   */
+  updateUIForAdminState(isAdmin) {
+    const userEmail = document.getElementById('userEmail');
+    const addToolBtn = document.getElementById('addToolBtn');
+    
+    if (isAdmin) {
+      // 为管理员添加特殊标识
+      if (userEmail) {
+        userEmail.innerHTML = `
+          <span class="admin-badge">👑</span>
+          ${userEmail.textContent}
+        `;
+      }
+      
+      // 显示管理员添加工具按钮
+      this.showAdminAddToolButton();
+      
+    } else {
+      // 移除管理员标识
+      if (userEmail && userEmail.querySelector('.admin-badge')) {
+        const badge = userEmail.querySelector('.admin-badge');
+        badge.remove();
+      }
+    }
+  }
+
+  /**
+   * 显示管理员添加工具按钮
+   */
+  showAdminAddToolButton() {
+    // 检查是否已经存在管理员按钮
+    let adminAddBtn = document.getElementById('adminAddToolBtn');
+    
+    if (!adminAddBtn) {
+      // 创建管理员添加工具按钮
+      adminAddBtn = document.createElement('button');
+      adminAddBtn.id = 'adminAddToolBtn';
+      adminAddBtn.className = 'add-tool-btn admin-add-tool-btn';
+      adminAddBtn.innerHTML = '👑 添加系统工具';
+      adminAddBtn.title = '添加系统工具（所有用户可见）';
+      
+      // 添加到页面
+      document.body.appendChild(adminAddBtn);
+      
+      // 绑定点击事件
+      adminAddBtn.addEventListener('click', () => {
+        this.showAdminAddToolModal();
+      });
+    }
+    
+    // 显示按钮
+    adminAddBtn.classList.add('show');
+  }
+
+  /**
+   * 显示管理员添加工具模态框
+   */
+  showAdminAddToolModal() {
+    // 暂时使用现有的添加工具模态框，后续可以创建专门的管理员模态框
+    this.showAddToolModal();
+    
+    // 修改标题以区分管理员工具
+    const modalTitle = document.querySelector('#addToolModal .modal-header h2');
+    if (modalTitle) {
+      modalTitle.textContent = '👑 添加系统工具';
+    }
+    
+    // 添加提示信息
+    const form = document.getElementById('addToolForm');
+    if (form && !form.querySelector('.admin-notice')) {
+      const notice = document.createElement('div');
+      notice.className = 'admin-notice';
+      notice.innerHTML = `
+        <div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: #0369a1; font-weight: 500;">
+            👑 <span>管理员模式</span>
+          </div>
+          <div style="color: #0369a1; font-size: 0.9rem; margin-top: 0.5rem;">
+            您正在添加系统工具，所有用户都能看到这个工具。
+          </div>
+        </div>
+      `;
+      form.insertBefore(notice, form.firstChild);
+    }
+  }
+
   // 显示自定义工具相关功能
   showCustomToolFeatures() {
     // 显示所有自定义工具的操作按钮

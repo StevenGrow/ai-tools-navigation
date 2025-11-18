@@ -11,6 +11,7 @@ class App {
     this.toolsManager = null;
     this.uiManager = null;
     this.sessionManager = null;
+    this.adminManager = null;
     
     // 应用状态
     this.isInitialized = false;
@@ -113,10 +114,15 @@ class App {
     this.sessionManager = new SessionManager(this.supabaseClient);
     console.log('会话管理器已初始化');
     
+    // 初始化管理员管理器
+    this.adminManager = new AdminManager(this.supabaseClient);
+    console.log('管理员管理器已初始化');
+    
     // 将管理器实例设置为全局变量（向后兼容）
     window.uiManager = this.uiManager;
     window.authManager = this.authManager;
     window.toolsManager = this.toolsManager;
+    window.adminManager = this.adminManager;
   }
 
   /**
@@ -466,6 +472,27 @@ class App {
   }
 
   /**
+   * 加载管理员工具
+   */
+  async loadAdminTools() {
+    try {
+      console.log('加载管理员工具...');
+      
+      const adminTools = await this.adminManager.getAdminTools();
+      
+      // 将管理员工具添加到对应分类
+      adminTools.forEach(tool => {
+        this.addToolToCategory(tool, true); // true 表示是管理员工具
+      });
+      
+      console.log(`已加载 ${adminTools.length} 个管理员工具`);
+      
+    } catch (error) {
+      console.error('❌ 加载管理员工具失败:', error);
+    }
+  }
+
+  /**
    * 处理认证状态变化
    */
   async handleAuthStateChange(event, session) {
@@ -497,11 +524,24 @@ class App {
       // 开始会话监控
       this.sessionManager.startSessionMonitoring();
       
+      // 检查管理员状态
+      const isAdmin = await this.adminManager.checkAdminStatus();
+      console.log('管理员状态:', isAdmin);
+      
       // 加载用户自定义工具
       await this.loadUserCustomTools();
       
+      // 如果是管理员，加载管理员工具
+      if (isAdmin) {
+        await this.loadAdminTools();
+        this.uiManager.updateUIForAdminState(true);
+      }
+      
       // 显示欢迎消息
-      this.uiManager.showNotification(`欢迎回来，${user.email}！`, 'success');
+      const welcomeMsg = isAdmin ? 
+        `欢迎回来，管理员 ${user.email}！` : 
+        `欢迎回来，${user.email}！`;
+      this.uiManager.showNotification(welcomeMsg, 'success');
       
     } catch (error) {
       console.error('处理用户登录失败:', error);
