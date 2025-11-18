@@ -30,7 +30,7 @@ const htmlFiles = ['public/index.html', 'public/debug-auth.html'];
 
 // 处理每个 HTML 文件
 htmlFiles.forEach(filename => {
-    const filePath = path.join(__dirname, filename);
+    const filePath = path.join(__dirname, '..', filename);
     
     // 检查文件是否存在
     if (!fs.existsSync(filePath)) {
@@ -65,5 +65,39 @@ htmlFiles.forEach(filename => {
         console.log(`${filename} 中的环境变量 meta 标签已存在，跳过注入`);
     }
 });
+
+// 复制 src 目录到 public 目录
+const srcPath = path.join(__dirname, '..', 'src');
+const destPath = path.join(__dirname, '..', 'public', 'src');
+
+console.log('复制 src 目录到 public/src...');
+
+// 递归复制目录的函数
+function copyDir(src, dest) {
+    if (!fs.existsSync(dest)) {
+        fs.mkdirSync(dest, { recursive: true });
+    }
+    
+    const entries = fs.readdirSync(src, { withFileTypes: true });
+    
+    for (let entry of entries) {
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
+        
+        if (entry.isDirectory()) {
+            copyDir(srcPath, destPath);
+        } else {
+            fs.copyFileSync(srcPath, destPath);
+        }
+    }
+}
+
+// 执行复制
+if (fs.existsSync(srcPath)) {
+    copyDir(srcPath, destPath);
+    console.log('src 目录复制完成！');
+} else {
+    console.log('src 目录不存在，跳过复制');
+}
 
 console.log('构建完成！');
