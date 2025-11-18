@@ -482,7 +482,7 @@ class App {
       
       // 将管理员工具添加到对应分类
       adminTools.forEach(tool => {
-        this.addToolToCategory(tool, true); // true 表示是管理员工具
+        this.addToolToCategory(tool, false, true); // false=不是自定义工具, true=是管理员工具
       });
       
       console.log(`已加载 ${adminTools.length} 个管理员工具`);
@@ -971,8 +971,21 @@ class App {
         isChinese: document.getElementById('toolIsChinese').checked
       };
       
-      // 添加工具
-      const newTool = await this.toolsManager.addTool(toolData);
+      // 检查是否是管理员模式
+      const isAdminMode = document.querySelector('#addToolModal .admin-notice') !== null;
+      
+      let newTool;
+      if (isAdminMode && this.adminManager.getAdminStatus()) {
+        // 管理员添加系统工具
+        const result = await this.adminManager.addAdminTool(toolData);
+        if (!result.success) {
+          throw new Error(result.error);
+        }
+        newTool = result.data;
+      } else {
+        // 普通用户添加个人工具
+        newTool = await this.toolsManager.addTool(toolData);
+      }
       
       // 显示成功状态
       this.uiManager.showButtonLoading(submitBtn, '添加成功！');
