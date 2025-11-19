@@ -202,9 +202,14 @@ class App {
    * 设置工具管理相关事件监听器
    */
   setupToolEventListeners() {
-    // 添加工具按钮
+    // 添加个人工具按钮
     this.addEventListener('addToolBtn', 'click', () => {
       this.uiManager.showAddToolModal();
+    });
+    
+    // 添加系统工具按钮（管理员）
+    this.addEventListener('adminAddToolBtn', 'click', () => {
+      this.uiManager.showAdminAddToolModal();
     });
     
     // 添加工具表单提交
@@ -418,7 +423,10 @@ class App {
    * 加载用户自定义工具
    */
   async loadUserCustomTools() {
-    if (!this.currentUser) return;
+    if (!this.currentUser) {
+      console.log('用户未登录，跳过加载自定义工具');
+      return;
+    }
     
     try {
       console.log('加载用户自定义工具...');
@@ -427,44 +435,32 @@ class App {
       this.uiManager.showLoading('正在加载您的自定义工具...', 'dots');
       
       const customTools = await this.toolsManager.getUserTools(this.currentUser.id);
-      this.customTools = customTools;
+      this.customTools = customTools || [];
+      
+      console.log(`获取到 ${this.customTools.length} 个自定义工具`);
       
       // 清除现有的自定义工具
       this.removeCustomToolsFromUI();
       
-      // 使用进度条显示工具加载进度
-      if (customTools.length > 0) {
-        this.uiManager.hideLoading();
-        this.uiManager.showProgress(0, '正在加载自定义工具...');
-        
-        for (let i = 0; i < customTools.length; i++) {
-          const tool = customTools[i];
+      // 隐藏加载动画
+      this.uiManager.hideLoading();
+      
+      // 如果有工具，添加到页面
+      if (this.customTools.length > 0) {
+        for (let i = 0; i < this.customTools.length; i++) {
+          const tool = this.customTools[i];
           this.addToolToCategory(tool);
-          
-          // 更新进度
-          const progress = ((i + 1) / customTools.length) * 100;
-          this.uiManager.updateProgress(progress, `正在加载工具 ${i + 1}/${customTools.length}`);
-          
-          // 添加小延迟以显示进度效果
-          await new Promise(resolve => setTimeout(resolve, 50));
         }
         
-        this.uiManager.hideProgress();
+        console.log(`已加载 ${this.customTools.length} 个自定义工具`);
+        this.uiManager.showNotification(`已加载 ${this.customTools.length} 个自定义工具`, 'success', 2000);
       } else {
-        this.uiManager.hideLoading();
-      }
-      
-      console.log(`已加载 ${customTools.length} 个自定义工具`);
-      
-      if (customTools.length > 0) {
-        this.uiManager.showCompletionFeedback('自定义工具加载完成', {
-          count: customTools.length,
-          time: '0.5秒'
-        });
+        console.log('没有自定义工具');
       }
       
     } catch (error) {
       console.error('❌ 加载自定义工具失败:', error);
+      // 确保隐藏加载动画
       this.uiManager.hideLoading();
       this.uiManager.hideProgress();
       this.uiManager.showNotification('加载自定义工具失败，请刷新页面重试', 'error');
@@ -521,6 +517,8 @@ class App {
    */
   async handleUserLogin(user) {
     try {
+      console.log('处理用户登录:', user.email);
+      
       // 开始会话监控
       this.sessionManager.startSessionMonitoring();
       
@@ -543,8 +541,14 @@ class App {
         `欢迎回来，${user.email}！`;
       this.uiManager.showNotification(welcomeMsg, 'success');
       
+      console.log('用户登录处理完成');
+      
     } catch (error) {
       console.error('处理用户登录失败:', error);
+      // 确保隐藏所有加载状态
+      this.uiManager.hideLoading();
+      this.uiManager.hideProgress();
+      this.uiManager.showNotification('加载用户数据失败', 'error');
     }
   }
 
@@ -1245,37 +1249,33 @@ class App {
    * 将工具添加到对应分类
    */
   addToolToCategory(tool) {
-    const categorySection = document.querySelector(`#${tool.category}`);
-    if (categorySection) {
-      const toolsGrid = categorySection.querySelector('.tools-grid');
-      if (toolsGrid) {
-        const toolCard = this.uiManager.renderToolCard(tool, true);
-        
-        // 为自定义工具添加事件监听器
-        this.addCustomToolEventListeners(toolCard, tool);
-        
-        // 添加入场动画
-        toolCard.style.opacity = '0';
-        toolCard.style.transform = 'translateY(20px)';
-        
-        // 将自定义工具插入到网格中，保持两列布局
-        this.insertToolIntoGrid(toolsGrid, toolCard);
-        
-        // 触发入场动画
-        setTimeout(() => {
-          toolCard.style.transition = 'all 0.3s ease';
-          toolCard.style.opacity = '1';
-          toolCard.style.transform = 'translateY(0)';
-          
-          // 显示浮动成功消息
-          this.uiManager.showFloatingSuccess(toolCard, '已添加');
-        }, 50);
-        
-        // 确保分类可见（处理空分类情况）
-        categorySection.classList.remove('hidden');
-        
-        console.log('工具已添加到分类:', tool.tool_name, tool.category);
+    try {
+      const categorySection = document.querySelector(`#${tool.category}`);
+      if (!categorySection) {
+        console.warn('未找到分类:', tool.category);
+        return;
       }
+      
+      const toolsGrid = categorySection.querySelector('.tools-grid');
+      if (!toolsGrid) {
+        console.warn('未找到工具网格:', tool.category);
+        return;
+      }
+      
+      const toolCard = this.uiManager.renderToolCard(tool, true);
+      
+      // 为自定义工具添加事件监听器
+      this.addCustomToolEventListeners(toolCard, tool);
+      
+      // 将自定义工具插入到网格中
+      toolsGrid.appendChild(toolCard);
+      
+      // 确保分类可见
+      categorySection.classList.remove('hidden');
+      
+      console.log('工具已添加到分类:', tool.tool_name, tool.category);
+    } catch (error) {
+      console.error('添加工具到分类失败:', error, tool);
     }
   }
 

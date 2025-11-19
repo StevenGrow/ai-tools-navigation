@@ -212,10 +212,18 @@
         ↑
     </button>
 
-    <!-- 添加工具按钮 -->
-    <button id="addToolBtn" class="add-tool-btn" title="添加自定义工具">
-        +
-    </button>
+    <!-- 浮动操作按钮 -->
+    <div class="floating-action-buttons">
+        <!-- 管理员添加系统工具按钮 -->
+        <button id="adminAddToolBtn" class="admin-add-tool-btn" title="添加系统工具（所有用户可见）">
+            👑 添加系统工具
+        </button>
+        
+        <!-- 添加个人工具按钮 -->
+        <button id="addToolBtn" class="add-tool-btn" title="添加个人工具（仅自己可见）">
+            +
+        </button>
+    </div>
 
     <!-- 登录模态框 -->
     <div id="loginModal" class="modal">

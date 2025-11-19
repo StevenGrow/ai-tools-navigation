@@ -162,24 +162,35 @@
     color: var(--primary-color);
 }
 
-/* 添加工具按钮 */
-.add-tool-btn {
+/* 浮动操作按钮容器 */
+.floating-action-buttons {
     position: fixed;
     bottom: 2rem;
-    left: 2rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    z-index: 1000;
+}
+
+/* 添加个人工具按钮（紫色圆形） */
+.add-tool-btn {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
     color: white;
     border: none;
     border-radius: 50%;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     cursor: pointer;
-    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
     transition: all 0.3s ease;
     opacity: 0;
     visibility: hidden;
-    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
 
 .add-tool-btn.show {
@@ -189,7 +200,66 @@
 
 .add-tool-btn:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 6px 24px rgba(139, 92, 246, 0.5);
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+}
+
+/* 添加系统工具按钮（橙色胶囊形） */
+.admin-add-tool-btn {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.4);
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-add-tool-btn.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.admin-add-tool-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 6px 24px rgba(245, 158, 11, 0.5);
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+}
+
+/* 管理员按钮光晕效果 */
+.admin-add-tool-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    animation: adminPulse 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes adminPulse {
+    0%, 100% { 
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
 }
 
 /* 按钮基础样式 */
@@ -333,8 +403,7 @@
 .slide-in {
     animation: slideIn 0.3s ease-out;
 }
-/
-* 管理员功能样式 */
+/* 管理员功能样式 */
 .admin-badge {
     display: inline-block;
     margin-right: 0.5rem;
@@ -345,61 +414,6 @@
 @keyframes adminGlow {
     0% { opacity: 0.8; }
     100% { opacity: 1; }
-}
-
-.admin-add-tool-btn {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: white;
-    font-weight: 600;
-    border: 2px solid rgba(245, 158, 11, 0.3);
-    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);
-    left: 2rem;
-    bottom: 6rem; /* 在普通添加按钮上方 */
-    
-    /* 覆盖基础按钮的圆形样式 */
-    border-radius: 12px !important;
-    width: auto !important;
-    height: auto !important;
-    padding: 0.75rem 1.5rem !important;
-    font-size: 0.9rem !important;
-    white-space: nowrap;
-    min-width: 140px;
-}
-
-.admin-add-tool-btn:hover {
-    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
-}
-
-.admin-add-tool-btn:hover::before {
-    animation-duration: 1s;
-    box-shadow: 0 0 20px rgba(245, 158, 11, 0.7);
-}
-
-.admin-add-tool-btn::before {
-    content: '';
-    position: absolute;
-    top: -1px;
-    left: -1px;
-    right: -1px;
-    bottom: -1px;
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    border-radius: 13px; /* 匹配按钮的圆角 */
-    z-index: -1;
-    opacity: 0.8;
-    animation: adminGentleGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes adminGentleGlow {
-    0% { 
-        opacity: 0.6;
-        box-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
-    }
-    100% { 
-        opacity: 0.9;
-        box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
-    }
 }
 
 /* 管理员工具卡片样式 */
@@ -444,26 +458,41 @@
     font-size: 0.9rem;
 }
 
-/* 响应式管理员按钮 */
+/* 响应式浮动按钮 */
 @media (max-width: 768px) {
+    .floating-action-buttons {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        gap: 0.8rem;
+    }
+    
+    .add-tool-btn {
+        width: 56px;
+        height: 56px;
+        font-size: 1.6rem;
+    }
+    
     .admin-add-tool-btn {
-        left: 1rem;
-        bottom: 5rem;
-        font-size: 0.8rem !important;
-        padding: 0.6rem 1.2rem !important;
-        min-width: 120px;
+        font-size: 0.85rem;
+        padding: 0.65rem 1.3rem;
     }
 }
 
 @media (max-width: 480px) {
-    .admin-add-tool-btn {
-        left: 0.8rem;
-        bottom: 4.5rem;
-        font-size: 0.75rem !important;
-        padding: 0.5rem 1rem !important;
-        min-width: 100px;
+    .floating-action-buttons {
+        bottom: 1rem;
+        right: 1rem;
+        gap: 0.6rem;
+    }
+    
+    .add-tool-btn {
         width: 52px;
         height: 52px;
-        font-size: 0.7rem;
+        font-size: 1.4rem;
+    }
+    
+    .admin-add-tool-btn {
+        font-size: 0.8rem;
+        padding: 0.6rem 1.1rem;
     }
 }

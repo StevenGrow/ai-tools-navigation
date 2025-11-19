@@ -366,28 +366,27 @@ class UIManager {
    * 显示管理员添加工具按钮
    */
   showAdminAddToolButton() {
-    // 检查是否已经存在管理员按钮
-    let adminAddBtn = document.getElementById('adminAddToolBtn');
+    const adminAddBtn = document.getElementById('adminAddToolBtn');
     
-    if (!adminAddBtn) {
-      // 创建管理员添加工具按钮
-      adminAddBtn = document.createElement('button');
-      adminAddBtn.id = 'adminAddToolBtn';
-      adminAddBtn.className = 'add-tool-btn admin-add-tool-btn';
-      adminAddBtn.innerHTML = '👑 添加系统工具';
-      adminAddBtn.title = '添加系统工具（所有用户可见）';
-      
-      // 添加到页面
-      document.body.appendChild(adminAddBtn);
-      
-      // 绑定点击事件
-      adminAddBtn.addEventListener('click', () => {
-        this.showAdminAddToolModal();
-      });
+    if (adminAddBtn) {
+      // 显示按钮
+      adminAddBtn.classList.add('show');
+      console.log('管理员添加工具按钮已显示');
+    } else {
+      console.warn('未找到管理员添加工具按钮元素');
     }
+  }
+  
+  /**
+   * 隐藏管理员添加工具按钮
+   */
+  hideAdminAddToolButton() {
+    const adminAddBtn = document.getElementById('adminAddToolBtn');
     
-    // 显示按钮
-    adminAddBtn.classList.add('show');
+    if (adminAddBtn) {
+      adminAddBtn.classList.remove('show');
+      console.log('管理员添加工具按钮已隐藏');
+    }
   }
 
   /**
@@ -456,6 +455,9 @@ class UIManager {
     if (addToolBtn) {
       addToolBtn.classList.remove('show');
     }
+    
+    // 隐藏管理员添加工具按钮
+    this.hideAdminAddToolButton();
     
     // 移除所有自定义工具卡片
     const customTools = document.querySelectorAll('.tool-card[data-custom="true"]');

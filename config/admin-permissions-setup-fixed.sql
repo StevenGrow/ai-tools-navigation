@@ -25,9 +25,6 @@ ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
 -- 5. 创建管理员表的 RLS 策略
 -- 修复：允许所有认证用户查看管理员列表，避免无限递归
-DROP POLICY IF EXISTS "Admin users can view admin list" ON admin_users;
-DROP POLICY IF EXISTS "Authenticated users can view admin list" ON admin_users;
-
 CREATE POLICY "Authenticated users can view admin list"
   ON admin_users FOR SELECT
   USING (auth.role() = 'authenticated');

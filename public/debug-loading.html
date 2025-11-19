@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>加载状态调试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .debug-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    .debug-section h3 {
+      margin-top: 0;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: #4CAF50;
+      color: white;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .danger {
+      background: #f44336;
+    }
+    .danger:hover {
+      background: #da190b;
+    }
+    .info {
+      background: #2196F3;
+    }
+    .info:hover {
+      background: #0b7dda;
+    }
+    #console-output {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 12px;
+    }
+    .log-entry {
+      margin: 5px 0;
+      padding: 5px;
+      border-left: 3px solid #4CAF50;
+    }
+    .log-error {
+      border-left-color: #f44336;
+      background: #ffebee;
+    }
+    .log-warn {
+      border-left-color: #ff9800;
+      background: #fff3e0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔍 加载状态调试工具</h1>
+  
+  <div class="debug-section">
+    <h3>当前状态</h3>
+    <div id="current-status">
+      <p>加载中...</p>
+    </div>
+  </div>
+
+  <div class="debug-section">
+    <h3>控制面板</h3>
+    <button onclick="checkLoadingState()">检查加载状态</button>
+    <button onclick="forceHideLoading()" class="danger">强制隐藏加载</button>
+    <button onclick="forceHideProgress()" class="danger">强制隐藏进度条</button>
+    <button onclick="clearAllModals()" class="danger">清除所有模态框</button>
+    <button onclick="refreshPage()" class="info">刷新页面</button>
+  </div>
+
+  <div class="debug-section">
+    <h3>测试功能</h3>
+    <button onclick="testShowLoading()">测试显示加载</button>
+    <button onclick="testShowProgress()">测试显示进度</button>
+    <button onclick="testLoadUserTools()">测试加载用户工具</button>
+  </div>
+
+  <div class="debug-section">
+    <h3>控制台输出</h3>
+    <button onclick="clearConsole()">清空控制台</button>
+    <div id="console-output"></div>
+  </div>
+
+  <script>
+    // 拦截console.log
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+
+    function addLogEntry(message, type = 'log') {
+      const output = document.getElementById('console-output');
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      output.appendChild(entry);
+      output.scrollTop = output.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      addLogEntry(args.join(' '), 'log');
+    };
+
+    console.error = function(...args) {
+      originalError.apply(console, args);
+      addLogEntry(args.join(' '), 'error');
+    };
+
+    console.warn = function(...args) {
+      originalWarn.apply(console, args);
+      addLogEntry(args.join(' '), 'warn');
+    };
+
+    // 检查加载状态
+    function checkLoadingState() {
+      const loadingOverlay = document.getElementById('globalLoadingOverlay');
+      const progressContainer = document.getElementById('globalProgressContainer');
+      const modals = document.querySelectorAll('.modal.show');
+      
+      const status = {
+        loadingVisible: !!loadingOverlay,
+        progressVisible: !!progressContainer,
+        activeModals: modals.length,
+        uiManagerExists: typeof window.uiManager !== 'undefined',
+        appExists: typeof window.app !== 'undefined'
+      };
+
+      console.log('当前状态:', JSON.stringify(status, null, 2));
+      updateStatusDisplay(status);
+    }
+
+    // 更新状态显示
+    function updateStatusDisplay(status) {
+      const statusDiv = document.getElementById('current-status');
+      statusDiv.innerHTML = `
+        <p><strong>加载遮罩:</strong> ${status.loadingVisible ? '✅ 显示中' : '❌ 已隐藏'}</p>
+        <p><strong>进度条:</strong> ${status.progressVisible ? '✅ 显示中' : '❌ 已隐藏'}</p>
+        <p><strong>活动模态框:</strong> ${status.activeModals} 个</p>
+        <p><strong>UI管理器:</strong> ${status.uiManagerExists ? '✅ 已加载' : '❌ 未加载'}</p>
+        <p><strong>App实例:</strong> ${status.appExists ? '✅ 已加载' : '❌ 未加载'}</p>
+      `;
+    }
+
+    // 强制隐藏加载
+    function forceHideLoading() {
+      const loadingOverlay = document.getElementById('globalLoadingOverlay');
+      if (loadingOverlay) {
+        loadingOverlay.remove();
+        console.log('✅ 已强制移除加载遮罩');
+      } else {
+        console.log('ℹ️ 没有找到加载遮罩');
+      }
+      
+      if (window.uiManager) {
+        window.uiManager.hideLoading();
+        console.log('✅ 已调用 uiManager.hideLoading()');
+      }
+      
+      checkLoadingState();
+    }
+
+    // 强制隐藏进度条
+    function forceHideProgress() {
+      const progressContainer = document.getElementById('globalProgressContainer');
+      if (progressContainer) {
+        progressContainer.remove();
+        console.log('✅ 已强制移除进度条');
+      } else {
+        console.log('ℹ️ 没有找到进度条');
+      }
+      
+      if (window.uiManager) {
+        window.uiManager.hideProgress();
+        console.log('✅ 已调用 uiManager.hideProgress()');
+      }
+      
+      checkLoadingState();
+    }
+
+    // 清除所有模态框
+    function clearAllModals() {
+      const modals = document.querySelectorAll('.modal.show');
+      modals.forEach(modal => {
+        modal.classList.remove('show');
+      });
+      console.log(`✅ 已清除 ${modals.length} 个模态框`);
+      checkLoadingState();
+    }
+
+    // 刷新页面
+    function refreshPage() {
+      window.location.reload();
+    }
+
+    // 清空控制台
+    function clearConsole() {
+      document.getElementById('console-output').innerHTML = '';
+    }
+
+    // 测试显示加载
+    function testShowLoading() {
+      if (window.uiManager) {
+        console.log('测试显示加载...');
+        window.uiManager.showLoading('测试加载中...', 'dots');
+        setTimeout(() => {
+          window.uiManager.hideLoading();
+          console.log('测试完成，已隐藏加载');
+        }, 2000);
+      } else {
+        console.error('UI管理器未加载');
+      }
+    }
+
+    // 测试显示进度
+    function testShowProgress() {
+      if (window.uiManager) {
+        console.log('测试显示进度...');
+        window.uiManager.showProgress(0, '测试进度...');
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += 10;
+          window.uiManager.updateProgress(progress, `进度 ${progress}%`);
+          if (progress >= 100) {
+            clearInterval(interval);
+            setTimeout(() => {
+              window.uiManager.hideProgress();
+              console.log('测试完成，已隐藏进度');
+            }, 500);
+          }
+        }, 200);
+      } else {
+        console.error('UI管理器未加载');
+      }
+    }
+
+    // 测试加载用户工具
+    async function testLoadUserTools() {
+      if (window.app) {
+        console.log('测试加载用户工具...');
+        try {
+          await window.app.loadUserCustomTools();
+          console.log('✅ 加载完成');
+        } catch (error) {
+          console.error('❌ 加载失败:', error);
+        }
+      } else {
+        console.error('App实例未加载');
+      }
+    }
+
+    // 页面加载时检查状态
+    window.addEventListener('load', () => {
+      console.log('调试页面已加载');
+      setTimeout(checkLoadingState, 1000);
+    });
+
+    // 定期检查状态
+    setInterval(checkLoadingState, 5000);
+  </script>
+</body>
+</html>
