@@ -1149,10 +1149,6 @@ class AdminPanel {
       }
     }
   }
-}
-
-// 导出 AdminPanel 类
-window.AdminPanel = AdminPanel;
 
   /**
    * 获取管理员角色名称
@@ -1409,3 +1405,6 @@ window.AdminPanel = AdminPanel;
     return date.toLocaleDateString();
   }
 }
+
+// 导出 AdminPanel 类
+window.AdminPanel = AdminPanel;
