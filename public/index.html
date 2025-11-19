@@ -420,6 +420,7 @@
 
                 <!-- 统计概览标签页 -->
                 <div id="adminStatsTab" class="admin-tab-content active">
+                    <!-- 基础统计卡片 -->
                     <div class="admin-stats-grid">
                         <div class="admin-stat-card">
                             <div class="stat-icon">🛠️</div>
@@ -450,6 +451,29 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 详细统计区域 -->
+                    <div class="stats-details-container">
+                        <!-- 分类统计 -->
+                        <div class="stats-section" id="categoryStatsContainer">
+                            <div class="admin-loading">加载中...</div>
+                        </div>
+
+                        <!-- 特性统计 -->
+                        <div class="stats-section" id="featureStatsContainer">
+                            <div class="admin-loading">加载中...</div>
+                        </div>
+
+                        <!-- 时间趋势 -->
+                        <div class="stats-section" id="timeStatsContainer">
+                            <div class="admin-loading">加载中...</div>
+                        </div>
+
+                        <!-- 最新工具 -->
+                        <div class="stats-section" id="topToolsContainer">
+                            <div class="admin-loading">加载中...</div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 工具管理标签页 -->
@@ -464,6 +488,28 @@
                             <button class="admin-filter-btn" data-filter="user">用户工具</button>
                         </div>
                     </div>
+                    
+                    <!-- 批量操作工具栏 -->
+                    <div class="admin-batch-actions" id="adminBatchActions">
+                        <div class="batch-actions-info">
+                            <span>已选择 <strong id="adminSelectedCount">0</strong> 个工具</span>
+                        </div>
+                        <div class="batch-actions-buttons">
+                            <button class="batch-action-btn" id="adminSelectAll">
+                                ✓ 全选
+                            </button>
+                            <button class="batch-action-btn" id="adminDeselectAll">
+                                ✗ 取消
+                            </button>
+                            <button class="batch-action-btn batch-category" id="adminBatchCategory">
+                                📁 修改分类
+                            </button>
+                            <button class="batch-action-btn batch-delete" id="adminBatchDelete">
+                                🗑️ 批量删除
+                            </button>
+                        </div>
+                    </div>
+                    
                     <div class="admin-tools-list" id="adminToolsList">
                         <div class="admin-loading">加载中...</div>
                     </div>
