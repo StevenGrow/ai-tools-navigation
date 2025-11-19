@@ -535,11 +535,11 @@ class App {
         this.uiManager.updateUIForAdminState(true);
       }
       
-      // 显示欢迎消息
+      // 显示欢迎消息（2.5秒后自动消失）
       const welcomeMsg = isAdmin ? 
         `欢迎回来，管理员 ${user.email}！` : 
         `欢迎回来，${user.email}！`;
-      this.uiManager.showNotification(welcomeMsg, 'success');
+      this.uiManager.showNotification(welcomeMsg, 'success', 2500);
       
       console.log('用户登录处理完成');
       
@@ -574,7 +574,7 @@ class App {
    */
   showWelcomeMessage() {
     if (this.currentUser) {
-      this.uiManager.showNotification(`欢迎回来，${this.currentUser.email}！`, 'success');
+      this.uiManager.showNotification(`欢迎回来，${this.currentUser.email}！`, 'success', 2500);
     } else {
       // 可以显示一个简单的应用就绪消息
       console.log('AI 工具导航网站已就绪');
