@@ -25,6 +25,7 @@
                 <button id="loginBtn" class="auth-btn">登录</button>
                 <button id="registerBtn" class="auth-btn auth-btn-primary">注册</button>
                 <div id="userInfo" class="user-info hidden">
+                    <button id="adminPanelBtn" class="auth-btn admin-panel-btn hidden">👑 管理面板</button>
                     <span id="userEmail" class="user-email"></span>
                     <button id="logoutBtn" class="auth-btn auth-btn-secondary">登出</button>
                 </div>
@@ -402,6 +403,87 @@
         </div>
     </div>
 
+    <!-- 管理员面板模态框 -->
+    <div id="adminPanelModal" class="modal admin-panel-modal">
+        <div class="modal-content admin-panel-content">
+            <div class="modal-header admin-panel-header">
+                <h2>👑 管理员控制面板</h2>
+                <button class="modal-close" id="adminPanelClose">&times;</button>
+            </div>
+            <div class="admin-panel-body">
+                <!-- 标签页导航 -->
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="stats">📊 统计概览</button>
+                    <button class="admin-tab" data-tab="tools">🛠️ 工具管理</button>
+                    <button class="admin-tab" data-tab="users">👥 用户管理</button>
+                </div>
+
+                <!-- 统计概览标签页 -->
+                <div id="adminStatsTab" class="admin-tab-content active">
+                    <div class="admin-stats-grid">
+                        <div class="admin-stat-card">
+                            <div class="stat-icon">🛠️</div>
+                            <div class="stat-info">
+                                <div class="stat-label">系统工具</div>
+                                <div class="stat-value" id="systemToolsCount">-</div>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="stat-icon">📦</div>
+                            <div class="stat-info">
+                                <div class="stat-label">用户工具</div>
+                                <div class="stat-value" id="userToolsCount">-</div>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <div class="stat-label">注册用户</div>
+                                <div class="stat-value" id="totalUsersCount">-</div>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card">
+                            <div class="stat-icon">⚡</div>
+                            <div class="stat-info">
+                                <div class="stat-label">总工具数</div>
+                                <div class="stat-value" id="totalToolsCount">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 工具管理标签页 -->
+                <div id="adminToolsTab" class="admin-tab-content">
+                    <div class="admin-tools-header">
+                        <div class="admin-search-box">
+                            <input type="text" id="adminToolSearch" placeholder="搜索工具..." class="admin-search-input">
+                        </div>
+                        <div class="admin-filter-buttons">
+                            <button class="admin-filter-btn active" data-filter="all">全部</button>
+                            <button class="admin-filter-btn" data-filter="system">系统工具</button>
+                            <button class="admin-filter-btn" data-filter="user">用户工具</button>
+                        </div>
+                    </div>
+                    <div class="admin-tools-list" id="adminToolsList">
+                        <div class="admin-loading">加载中...</div>
+                    </div>
+                </div>
+
+                <!-- 用户管理标签页 -->
+                <div id="adminUsersTab" class="admin-tab-content">
+                    <div class="admin-users-header">
+                        <div class="admin-search-box">
+                            <input type="text" id="adminUserSearch" placeholder="搜索用户..." class="admin-search-input">
+                        </div>
+                    </div>
+                    <div class="admin-users-list" id="adminUsersList">
+                        <div class="admin-loading">加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Supabase JavaScript SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -411,6 +493,7 @@
     <script src="./src/js/modules/tools.js"></script>
     <script src="./src/js/modules/ui.js"></script>
     <script src="./src/js/modules/admin.js"></script>
+    <script src="./src/js/modules/admin-panel.js"></script>
     <script src="./src/js/core/app.js"></script>
     <script src="./src/js/modules/search.js"></script>
 </body>

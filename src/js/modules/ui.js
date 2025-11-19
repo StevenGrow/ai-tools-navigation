@@ -339,7 +339,7 @@ class UIManager {
    */
   updateUIForAdminState(isAdmin) {
     const userEmail = document.getElementById('userEmail');
-    const addToolBtn = document.getElementById('addToolBtn');
+    const adminPanelBtn = document.getElementById('adminPanelBtn');
     
     if (isAdmin) {
       // 为管理员添加特殊标识
@@ -350,6 +350,11 @@ class UIManager {
         `;
       }
       
+      // 显示管理员面板按钮
+      if (adminPanelBtn) {
+        adminPanelBtn.classList.remove('hidden');
+      }
+      
       // 显示管理员添加工具按钮
       this.showAdminAddToolButton();
       
@@ -358,6 +363,11 @@ class UIManager {
       if (userEmail && userEmail.querySelector('.admin-badge')) {
         const badge = userEmail.querySelector('.admin-badge');
         badge.remove();
+      }
+      
+      // 隐藏管理员面板按钮
+      if (adminPanelBtn) {
+        adminPanelBtn.classList.add('hidden');
       }
     }
   }

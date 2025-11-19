@@ -118,11 +118,16 @@ class App {
     this.adminManager = new AdminManager(this.supabaseClient);
     console.log('管理员管理器已初始化');
     
+    // 初始化管理员面板
+    this.adminPanel = new AdminPanel(this.supabaseClient, this.adminManager);
+    console.log('管理员面板已初始化');
+    
     // 将管理器实例设置为全局变量（向后兼容）
     window.uiManager = this.uiManager;
     window.authManager = this.authManager;
     window.toolsManager = this.toolsManager;
     window.adminManager = this.adminManager;
+    window.adminPanel = this.adminPanel;
   }
 
   /**
@@ -166,6 +171,13 @@ class App {
     // 登出按钮
     this.addEventListener('logoutBtn', 'click', async () => {
       await this.handleLogout();
+    });
+    
+    // 管理面板按钮
+    this.addEventListener('adminPanelBtn', 'click', () => {
+      if (this.adminPanel) {
+        this.adminPanel.show();
+      }
     });
     
     // 登录表单提交
