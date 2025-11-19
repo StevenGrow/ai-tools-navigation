@@ -76,14 +76,28 @@ class AdminManager {
    */
   async addAdminTool(toolData) {
     try {
+      console.log('开始添加管理员工具:', toolData);
+      console.log('当前管理员状态:', this.isAdmin);
+      
       if (!this.isAdmin) {
+        console.error('用户不是管理员');
         return {
           success: false,
           error: '只有管理员可以添加系统工具'
         };
       }
 
-      const { data: { user } } = await this.supabase.auth.getUser();
+      const { data: { user }, error: userError } = await this.supabase.auth.getUser();
+      
+      if (userError || !user) {
+        console.error('获取用户信息失败:', userError);
+        return {
+          success: false,
+          error: '用户身份验证失败'
+        };
+      }
+
+      console.log('当前用户:', user.id);
 
       const toolRecord = {
         user_id: user.id,
@@ -91,11 +105,13 @@ class AdminManager {
         tool_url: toolData.url,
         tool_desc: toolData.description,
         category: toolData.category,
-        is_free: toolData.isFree,
-        is_chinese: toolData.isChinese,
+        is_free: toolData.isFree || false,
+        is_chinese: toolData.isChinese || false,
         is_admin_tool: true,
         visibility: 'public' // 管理员工具默认公开
       };
+
+      console.log('准备插入的工具记录:', toolRecord);
 
       const { data, error } = await this.supabase
         .from('custom_tools')
@@ -104,12 +120,14 @@ class AdminManager {
         .single();
 
       if (error) {
+        console.error('数据库插入错误:', error);
         return {
           success: false,
           error: this.translateError(error.message)
         };
       }
 
+      console.log('管理员工具添加成功:', data);
       return {
         success: true,
         data: data
