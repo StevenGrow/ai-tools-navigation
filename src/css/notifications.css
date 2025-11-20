@@ -13,10 +13,12 @@
     align-items: flex-start;
     gap: 1rem;
     padding: 1rem;
+    padding-bottom: 1.25rem;
     transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
     z-index: 10000;
     border-left: 4px solid #6366f1;
+    overflow: hidden;
 }
 
 .notification.show {
@@ -52,12 +54,12 @@
 .notification-message {
     font-weight: 500;
     margin-bottom: 0.25rem;
-    color: var(--text-primary);
+    color: #1e293b;
 }
 
 .notification-subtitle {
     font-size: 0.9rem;
-    color: var(--text-secondary);
+    color: #64748b;
 }
 
 .notification-close {
@@ -65,7 +67,7 @@
     border: none;
     font-size: 1.2rem;
     cursor: pointer;
-    color: var(--text-secondary);
+    color: #64748b;
     padding: 0;
     width: 1.5rem;
     height: 1.5rem;
@@ -74,10 +76,40 @@
     justify-content: center;
     border-radius: 4px;
     transition: background-color 0.2s;
+    flex-shrink: 0;
 }
 
 .notification-close:hover {
     background: #f1f5f9;
+    color: #1e293b;
+}
+
+/* 通知进度条 */
+.notification-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 0;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
+    border-radius: 0 0 12px 12px;
+    transition: width 0s linear;
+}
+
+.notification-success .notification-progress-bar {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.notification-error .notification-progress-bar {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.notification-warning .notification-progress-bar {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.notification-info .notification-progress-bar {
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
 }
 
 /* 增强通知样式 */
@@ -227,7 +259,7 @@
 .enhanced-error-message {
     font-size: 1rem;
     line-height: 1.5;
-    color: var(--text-primary);
+    color: #1e293b;
     margin-bottom: 1rem;
 }
 
@@ -240,7 +272,7 @@
 
 .suggestions-title {
     font-weight: 600;
-    color: var(--text-primary);
+    color: #1e293b;
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
 }
@@ -254,7 +286,7 @@
 .enhanced-error-suggestions li {
     margin-bottom: 0.3rem;
     font-size: 0.9rem;
-    color: var(--text-secondary);
+    color: #64748b;
     position: relative;
 }
 
@@ -302,7 +334,7 @@
     width: 40px;
     height: 40px;
     border: 4px solid #e2e8f0;
-    border-top: 4px solid var(--primary-color);
+    border-top: 4px solid #6366f1;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 1rem;
@@ -318,7 +350,7 @@
 .loading-dot {
     width: 8px;
     height: 8px;
-    background: var(--primary-color);
+    background: #6366f1;
     border-radius: 50%;
     animation: dotPulse 1.4s ease-in-out infinite both;
 }
@@ -346,7 +378,7 @@
 .loading-pulse {
     width: 100%;
     height: 100%;
-    background: var(--primary-color);
+    background: #6366f1;
     border-radius: 50%;
     animation: pulse 1.5s ease-in-out infinite;
 }
@@ -372,7 +404,7 @@
 .loading-bar {
     width: 4px;
     height: 20px;
-    background: var(--primary-color);
+    background: #6366f1;
     border-radius: 2px;
     animation: barScale 1.2s ease-in-out infinite;
 }
@@ -393,7 +425,7 @@
 
 .loading-text {
     font-size: 1rem;
-    color: var(--text-primary);
+    color: #1e293b;
     font-weight: 500;
 }
 
@@ -404,14 +436,14 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    color: var(--text-secondary);
+    color: #64748b;
 }
 
 .data-loading-spinner {
     width: 32px;
     height: 32px;
     border: 3px solid #e2e8f0;
-    border-top: 3px solid var(--primary-color);
+    border-top: 3px solid #6366f1;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;
@@ -433,7 +465,7 @@
     width: 16px;
     height: 16px;
     border: 2px solid #e2e8f0;
-    border-top: 2px solid var(--primary-color);
+    border-top: 2px solid #6366f1;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -467,7 +499,7 @@
 .progress-message {
     font-size: 1rem;
     font-weight: 500;
-    color: var(--text-primary);
+    color: #1e293b;
     margin-bottom: 1rem;
 }
 
@@ -480,7 +512,7 @@
 }
 
 .progress-bar {
-    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(90deg, #6366f1, #8b5cf6);
     height: 100%;
     border-radius: 8px;
     transition: width 0.3s ease;
@@ -489,7 +521,7 @@
 
 .progress-percentage {
     font-size: 0.9rem;
-    color: var(--text-secondary);
+    color: #64748b;
     font-weight: 500;
 }
 

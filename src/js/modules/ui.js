@@ -610,8 +610,19 @@ class UIManager {
       this.addSuccessEffects(notification, options);
     }
 
-    // 自动关闭
+    // 添加进度条（如果有持续时间）
     if (duration > 0) {
+      const progressBar = document.createElement('div');
+      progressBar.className = 'notification-progress-bar';
+      notification.appendChild(progressBar);
+      
+      // 触发进度条动画
+      setTimeout(() => {
+        progressBar.style.width = '100%';
+        progressBar.style.transition = `width ${duration}ms linear`;
+      }, 10);
+      
+      // 自动关闭
       this.notificationTimeout = setTimeout(() => {
         this.hideNotification();
       }, duration);
