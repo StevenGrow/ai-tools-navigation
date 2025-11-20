@@ -432,18 +432,21 @@ class App {
 
   /**
    * 加载用户自定义工具
+   * @param {boolean} silent - 是否静默加载（不显示通知和加载动画）
    */
-  async loadUserCustomTools() {
+  async loadUserCustomTools(silent = true) {
     if (!this.currentUser) {
       console.log('用户未登录，跳过加载自定义工具');
       return;
     }
     
     try {
-      console.log('加载用户自定义工具...');
+      console.log('加载用户自定义工具...', silent ? '(静默模式)' : '');
       
-      // 显示加载动画
-      this.uiManager.showLoading('正在加载您的自定义工具...', 'dots');
+      // 只在非静默模式下显示加载动画
+      if (!silent) {
+        this.uiManager.showLoading('正在加载您的自定义工具...', 'dots');
+      }
       
       const customTools = await this.toolsManager.getUserTools(this.currentUser.id);
       this.customTools = customTools || [];
@@ -454,7 +457,9 @@ class App {
       this.removeCustomToolsFromUI();
       
       // 隐藏加载动画
-      this.uiManager.hideLoading();
+      if (!silent) {
+        this.uiManager.hideLoading();
+      }
       
       // 如果有工具，添加到页面
       if (this.customTools.length > 0) {
@@ -464,7 +469,11 @@ class App {
         }
         
         console.log(`已加载 ${this.customTools.length} 个自定义工具`);
-        this.uiManager.showNotification(`已加载 ${this.customTools.length} 个自定义工具`, 'success', 2000);
+        
+        // 只在非静默模式下显示通知
+        if (!silent) {
+          this.uiManager.showNotification(`已加载 ${this.customTools.length} 个自定义工具`, 'success', 2000);
+        }
       } else {
         console.log('没有自定义工具');
       }
@@ -474,7 +483,11 @@ class App {
       // 确保隐藏加载动画
       this.uiManager.hideLoading();
       this.uiManager.hideProgress();
-      this.uiManager.showNotification('加载自定义工具失败，请刷新页面重试', 'error');
+      
+      // 只在非静默模式下显示错误通知
+      if (!silent) {
+        this.uiManager.showNotification('加载自定义工具失败，请刷新页面重试', 'error');
+      }
     }
   }
 
@@ -541,8 +554,8 @@ class App {
       const isAdmin = await this.adminManager.checkAdminStatus();
       console.log('管理员状态:', isAdmin);
       
-      // 加载用户自定义工具
-      await this.loadUserCustomTools();
+      // 加载用户自定义工具（静默模式 = 不显示通知）
+      await this.loadUserCustomTools(true);
       
       // 如果是管理员，加载管理员工具
       if (isAdmin) {
@@ -565,7 +578,10 @@ class App {
       // 确保隐藏所有加载状态
       this.uiManager.hideLoading();
       this.uiManager.hideProgress();
-      this.uiManager.showNotification('加载用户数据失败', 'error');
+      // 只在真正登录时显示错误通知
+      if (showWelcome) {
+        this.uiManager.showNotification('加载用户数据失败', 'error');
+      }
     }
   }
 
@@ -641,7 +657,10 @@ class App {
    */
   handleNetworkOnline() {
     console.log('网络连接已恢复');
-    this.uiManager.showNotification('网络连接已恢复', 'success');
+    // 只在应用初始化完成后才显示网络状态通知
+    if (this.isInitialized) {
+      this.uiManager.showNotification('网络连接已恢复', 'success', 2000);
+    }
   }
 
   /**
@@ -649,7 +668,10 @@ class App {
    */
   handleNetworkOffline() {
     console.log('网络连接已断开');
-    this.uiManager.showNotification('网络连接已断开，部分功能可能无法使用', 'warning', 0);
+    // 只在应用初始化完成后才显示网络状态通知
+    if (this.isInitialized) {
+      this.uiManager.showNotification('网络连接已断开，部分功能可能无法使用', 'warning', 5000);
+    }
   }
 
   /**
