@@ -57,8 +57,7 @@ class App {
       
       console.log('应用初始化完成');
       
-      // 显示欢迎消息
-      this.showWelcomeMessage();
+      // 不在页面刷新时显示欢迎消息，只在真正登录时显示
       
     } catch (error) {
       console.error('❌ 应用初始化失败:', error);
@@ -516,8 +515,10 @@ class App {
     this.uiManager.updateUIForAuthState(isAuthenticated, user);
     
     if (isAuthenticated && user) {
+      // 判断是否是真正的登录事件（SIGNED_IN），而不是页面刷新（INITIAL_SESSION）
+      const isRealLogin = event === 'SIGNED_IN';
       // 用户登录
-      await this.handleUserLogin(user);
+      await this.handleUserLogin(user, isRealLogin);
     } else {
       // 用户登出
       this.handleUserLogout();
@@ -526,10 +527,12 @@ class App {
 
   /**
    * 处理用户登录
+   * @param {Object} user - 用户对象
+   * @param {boolean} showWelcome - 是否显示欢迎消息（只在真正登录时显示，页面刷新时不显示）
    */
-  async handleUserLogin(user) {
+  async handleUserLogin(user, showWelcome = false) {
     try {
-      console.log('处理用户登录:', user.email);
+      console.log('处理用户登录:', user.email, '显示欢迎消息:', showWelcome);
       
       // 开始会话监控
       this.sessionManager.startSessionMonitoring();
@@ -547,11 +550,13 @@ class App {
         this.uiManager.updateUIForAdminState(true);
       }
       
-      // 显示欢迎消息（2.5秒后自动消失）
-      const welcomeMsg = isAdmin ? 
-        `欢迎回来，管理员 ${user.email}！` : 
-        `欢迎回来，${user.email}！`;
-      this.uiManager.showNotification(welcomeMsg, 'success', 2500);
+      // 只在真正登录时显示欢迎消息，页面刷新时不显示
+      if (showWelcome) {
+        const welcomeMsg = isAdmin ? 
+          `欢迎回来，管理员 ${user.email}！` : 
+          `欢迎回来，${user.email}！`;
+        this.uiManager.showNotification(welcomeMsg, 'success', 2500);
+      }
       
       console.log('用户登录处理完成');
       
@@ -581,17 +586,7 @@ class App {
     console.log('用户登出处理完成');
   }
 
-  /**
-   * 显示欢迎消息
-   */
-  showWelcomeMessage() {
-    if (this.currentUser) {
-      this.uiManager.showNotification(`欢迎回来，${this.currentUser.email}！`, 'success', 2500);
-    } else {
-      // 可以显示一个简单的应用就绪消息
-      console.log('AI 工具导航网站已就绪');
-    }
-  }
+
 
   /**
    * 处理初始化错误
