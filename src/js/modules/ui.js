@@ -316,8 +316,7 @@ class UIManager {
       // 显示自定义工具相关功能
       this.showCustomToolFeatures();
       
-      // 显示成功登录通知（2.5秒后自动消失）
-      this.showNotification(`欢迎回来，${user.email}！`, 'success', 2500);
+      // 不在这里显示欢迎消息，由 app.js 的 handleUserLogin 控制
     } else {
       // 未登录状态
       if (loginBtn) loginBtn.classList.remove('hidden');
